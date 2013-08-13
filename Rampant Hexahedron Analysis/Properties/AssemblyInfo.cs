@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Rampant Hexahedron Analysis")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("An extendable Minecraft world analyzer.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Rampant Intelligence")]
 [assembly: AssemblyProduct("Rampant Hexahedron Analysis")]
-[assembly: AssemblyCopyright("Copyright ©  2013")]
+[assembly: AssemblyCopyright("Copyright © Aerom Xundes 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
