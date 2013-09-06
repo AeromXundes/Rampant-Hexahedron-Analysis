@@ -36,6 +36,11 @@ namespace RHA
 {
     internal class PluginsComposer
     {
+        /*
+         * Pretty much this entire class uses things from http://randomactsofcoding.blogspot.com/2009/11/working-with-managed-extensibility.html.
+         * If you don't know MEF, go read that tutorial. It's great.
+         */
+
         public PluginsComposer ()
             :this(@"Analyzers\")
 	    {

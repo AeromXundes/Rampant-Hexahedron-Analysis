@@ -98,15 +98,20 @@ namespace RHA.Analyzers.BaseImplementations
         public abstract AnalyzerInfo AnalyzerInfo { get; }
 
         /// <summary>
-        /// 
+        /// Return the results. Doesn't imply that there ARE results.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Returns an object that may have result data.</returns>
         protected abstract object GetResults();
 
         /// <summary>
-        /// 
+        /// Default implementation is that it returns <see cref="GetResults"/>.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Returns <see cref="GetResults"/>.</returns>
+        /// <remarks>
+        /// This looks like an odd way of doing things. And, to a certain extent, it is. <see cref="GetResults"/> and this function are trying to
+        /// emulate return type covariance, which C# doesn't support. Using this kind of setup means both Object (fulfilling IAnalyzer's requirement)
+        /// and whatever deriving classes implement can be returned. This is useful since there are stronger types.
+        /// </remarks>
         public virtual object Results() { return this.GetResults(); }
 
         /// <summary>
@@ -136,6 +141,8 @@ namespace RHA.Analyzers.BaseImplementations
         /// </summary>
         public virtual void Reset()
         {
+            if (this.Status == AnalyzerState.Running)
+                throw new InvalidOperationException("You can't reset a analyzer when it's running.");
             this.CancelSource = null;
             this.CancelToken = default(CancellationToken);
             this.NumberOfChunksRead = 0;
@@ -145,7 +152,7 @@ namespace RHA.Analyzers.BaseImplementations
 
         /// <summary>
         /// True if this analyzer requires more configuration options than what has been specified in ParallelChunkAnalyzer.
-        /// This property implies <see cref="HasSpecialConfig"/>.
+        /// This property should imply <see cref="HasSpecialConfig"/>.
         /// </summary>
         public virtual bool RequiresSpecialConfig { get { return false; } }
         /// <summary>
