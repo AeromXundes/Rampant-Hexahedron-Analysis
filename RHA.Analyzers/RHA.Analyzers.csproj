@@ -49,6 +49,7 @@
     <Compile Include="AnalyzerFinishState.cs" />
     <Compile Include="AnalyzerInfo.cs" />
     <Compile Include="AnalyzerState.cs" />
+    <Compile Include="BaseImplementations\AnalyzerBase.cs" />
     <Compile Include="BaseImplementations\ParallelChunkAnalyzer.cs" />
     <Compile Include="DataPoints\Blocks\Block_IdDataComparer.cs" />
     <Compile Include="DataPoints\Blocks\Block_BasicInfo.cs" />
