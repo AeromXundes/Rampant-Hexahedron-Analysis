@@ -1,0 +1,26 @@
+﻿Cluster Statistics
+An addin library for Rampant Hexahedron Analysis (RHA)
+By Aerom Xundes
+
+Part of a programming project for CS-1332 at Georgia Tech during the Fall 2013 Semester.
+
+Brief description:
+	Provides a suite to analyze clusters of blocks. Intended for ore blocks, but can be used with any block id.
+	
+	* Statistics across all clusters in a game world.
+		* Perfect for mod developers tuning a mod's ore generation, or server admins wanting a bit extra ore for their players without giving too much extra.
+	* Gives empirical data on clusters.
+		* No more guess-work when trying to figure out how much ore is enough.
+		* You don't have to play for hours to establish how much ore you need. Generate a world and analyze!
+
+
+	Limitations of this analyzer:
+		Clusters are defined as a single continuous volume of blocks touching each other (horizonally, vertically, and diagonally).
+		Meaning this analyzer will not give reliable results with density based ore generation (such as a cloud of ore).
+		There is no way for this analyzer to determine when two clusters are generated together---it will assume it is one large cluster.
+			Although, the statistics will likely flag these larger clusters as outliers.
+
+
+RHA project info:
+	Website: http://RampantIntelligence.blogspot.com/RHA
+	Github: https://github.com/AeromXundes/Rampant-Hexahedron-Analysis
