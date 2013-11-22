@@ -43,7 +43,7 @@ namespace RHA.Analyzers.BlockTypeCount
 
         protected override Dictionary<Block_BasicInfo,long> Analyze(IO.ChunkBlocks Chunk, System.Threading.CancellationToken CancelToken)
         {
-            Dictionary<Block_BasicInfo, long> data = new Dictionary<Block_BasicInfo, long>(new Block_IdDataComparer());
+            Dictionary<Block_BasicInfo, long> data = new Dictionary<Block_BasicInfo, long>();
 
             foreach (Block_BasicInfo b in Chunk)
             {
@@ -63,7 +63,7 @@ namespace RHA.Analyzers.BlockTypeCount
             var t = Data.GetType();
             Dictionary<Block_BasicInfo, long>[] castedData = Data;
             //Dictionary<Block_BasicInfo, long>[] castedData = (Dictionary<Block_BasicInfo, long>[])Data;
-            Dictionary<Block_BasicInfo, long> tempResults = new Dictionary<Block_BasicInfo, long>(castedData[0].Count * castedData.Length, new Block_IdDataComparer());
+            Dictionary<Block_BasicInfo, long> tempResults = new Dictionary<Block_BasicInfo, long>(castedData[0].Count * castedData.Length);
 
             long TotalNumberOfBlocks = 0;
             long TotalNumberOfChunks = 0;
