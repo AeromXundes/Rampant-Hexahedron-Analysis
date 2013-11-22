@@ -12,7 +12,7 @@ namespace RHA.Analyzers.DataPoints.Blocks
     /// </summary>
     public class Block_BasicInfo_Location
         : Block_BasicInfo, IEquatable<Block_BasicInfo_Location>,
-        System.Collections.Generic.IEqualityComparer<Block_BasicInfo_Location>,
+        IEqualityComparer<Block_BasicInfo_Location>,
         IComparable<Block_BasicInfo_Location>,
         IComparer<Block_BasicInfo_Location>
     {
@@ -137,37 +137,19 @@ namespace RHA.Analyzers.DataPoints.Blocks
             return this.Distance(this.XWorld.GetValueOrDefault(), this.YWorld.GetValueOrDefault(), this.ZWorld.GetValueOrDefault(), X, Y, Z);
         }
         #endregion
-        #region IEquatityComparer Implementation
-        /// <summary>
-        /// Matches exactly where this block's chunk is in the world, where in that chunk it is located, and where in the world it is.
-        /// </summary>
-        /// <param name="l1"></param>
-        /// <param name="l2"></param>
-        /// <returns>Returns true if l1 is in the same location as l2.</returns>
-        public static bool Equals(Block_BasicInfo_Location l1, Block_BasicInfo_Location l2)
-        {
-            return (
-                   l1.XWorld == l2.XWorld
-                && l1.YWorld == l2.YWorld
-                && l1.ZWorld == l2.ZWorld
-                );
-        }
-
-        public static int GetHashCode(Block_BasicInfo_Location obj)
-        {
-            // Bitwise OR these together.
-            // The y is put in the high order 8 bits
-            // OPTIMIZE: Might be able to come up with a better hashing function.
-            int hCode = obj.YWorld.GetValueOrDefault() << 24
-                      ^ obj.XWorld.GetValueOrDefault() << 8
-                      ^ obj.ZWorld.GetValueOrDefault();
-            return hCode;
-        }
-        #endregion
         #region IEquatable Implementation
+        /// <summary>
+        /// Compares the x,y, and z coordinates for equality.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns>Returns true when the x, y, and z coordinates are an exact match.</returns>
         public bool Equals(Block_BasicInfo_Location other)
         {
-            return Equals(this, other);
+            return (
+                   this.XWorld == other.XWorld
+                && this.YWorld == other.YWorld
+                && this.ZWorld == other.ZWorld
+                );
         }
         #endregion
         #region IComparable Implmentation
@@ -178,14 +160,28 @@ namespace RHA.Analyzers.DataPoints.Blocks
         /// <returns>Returns -1 if this block has a smaller distance from the origin than the other block, 0 if they are equal, 1 if greater.</returns>
         public int CompareTo(Block_BasicInfo_Location other)
         {
-            return Compare(this, other);
+            return this.Distance3D().CompareTo(other.Distance3D());
         }
         #endregion
-        #region IComparer Implementation
-        public int Compare(Block_BasicInfo_Location x, Block_BasicInfo_Location y)
+        /// <summary>
+        /// Hashes the coordinate values.
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
         {
-            return x.Distance3D().CompareTo(y.Distance3D());
+            // Bitwise OR these together.
+            // The y is put in the high order 8 bits
+            // OPTIMIZE: Might be able to come up with a better hashing function.
+            int hCode = obj.YWorld.GetValueOrDefault() << 24
+                      ^ obj.XWorld.GetValueOrDefault() << 8
+                      ^ obj.ZWorld.GetValueOrDefault();
+            return hCode;
         }
-        #endregion
+        public override string ToString()
+        {
+            return "X: " + (this.XWorld.HasValue ? this.XWorld.GetValueOrDefault().ToString() : "?")
+                + " Y: " + (this.YWorld.HasValue ? this.YWorld.GetValueOrDefault().ToString() : "?")
+                + " Z: " + (this.ZWorld.HasValue ? this.ZWorld.GetValueOrDefault().ToString() : "?");
+        }
     }
 }

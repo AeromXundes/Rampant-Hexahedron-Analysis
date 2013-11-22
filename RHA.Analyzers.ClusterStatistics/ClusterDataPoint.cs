@@ -4,9 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using RHA.Analyzers.DataPoints.Blocks;
+
 namespace ClusterStatistics
 {
-    class ClusterDataPoint
+    public class ClusterDataPoint
     {
+        List<Block_BasicInfo> IdsWithinThisCluster;
+        
     }
 }

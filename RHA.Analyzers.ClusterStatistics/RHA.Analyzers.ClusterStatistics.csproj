@@ -39,10 +39,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClusterDataPoint.cs" />
+    <Compile Include="ClusterStatistics.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Description.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RHA.Analyzers\RHA.Analyzers.csproj">
+      <Project>{b3dff3c2-5bdd-497e-a557-9cc29a2d4837}</Project>
+      <Name>RHA.Analyzers</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
