@@ -158,11 +158,17 @@ namespace RHA.Analyzers.DataPoints.Blocks
         /// </summary>
         /// <param name="other"></param>
         /// <returns>Returns -1 if this block has a smaller distance from the origin than the other block, 0 if they are equal, 1 if greater.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when either location has null coordinates.</exception>
         public int CompareTo(Block_BasicInfo_Location other)
         {
-            return this.Distance3D().CompareTo(other.Distance3D());
+            double d1 = this.Distance3D();
+            double d2 = this.Distance3D();
+            if (d1.Equals(-1.0) || d2.Equals(-1.0))
+                throw new InvalidOperationException("Can't operate on null coordinates!");
+            return d1.CompareTo(d2);
         }
         #endregion
+        #region Object Overrides
         /// <summary>
         /// Hashes the coordinate values.
         /// </summary>
@@ -172,9 +178,9 @@ namespace RHA.Analyzers.DataPoints.Blocks
             // Bitwise OR these together.
             // The y is put in the high order 8 bits
             // OPTIMIZE: Might be able to come up with a better hashing function.
-            int hCode = obj.YWorld.GetValueOrDefault() << 24
-                      ^ obj.XWorld.GetValueOrDefault() << 8
-                      ^ obj.ZWorld.GetValueOrDefault();
+            int hCode = this.YWorld.GetValueOrDefault() << 24
+                      ^ this.XWorld.GetValueOrDefault() << 8
+                      ^ this.ZWorld.GetValueOrDefault();
             return hCode;
         }
         public override string ToString()
@@ -183,5 +189,6 @@ namespace RHA.Analyzers.DataPoints.Blocks
                 + " Y: " + (this.YWorld.HasValue ? this.YWorld.GetValueOrDefault().ToString() : "?")
                 + " Z: " + (this.ZWorld.HasValue ? this.ZWorld.GetValueOrDefault().ToString() : "?");
         }
+        #endregion
     }
 }

@@ -29,6 +29,10 @@ using System.Threading.Tasks;
 
 namespace RHA.Analyzers.DataPoints.Blocks
 {
+    /// <summary>
+    /// Stores Id:Data and Name information.
+    /// Compares based on 
+    /// </summary>
     public class Block_BasicInfo
         : IEquatable<Block_BasicInfo>,
         IComparable<Block_BasicInfo>
@@ -113,6 +117,11 @@ namespace RHA.Analyzers.DataPoints.Blocks
         public string Name;
 
         #region IEquatable Implementation
+        /// <summary>
+        /// Returns true if this Block_BasicInfo and another Block_BasicInfo object have the same Id:Data pair.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Equals(Block_BasicInfo other)
         {
             return (this.Id == other.Id && this.Data == other.Data);
@@ -125,16 +134,13 @@ namespace RHA.Analyzers.DataPoints.Blocks
         /// <param name="other"></param>
         /// <returns>Returns null if either has nulled Ids, or if Ids are the same, if either Data is null.
         /// Otherwise, it returns the comparison of Id, or in the case Id is the same, the comparison of Data.</returns>
-        public int? CompareTo(Block_BasicInfo other)
+        public int CompareTo(Block_BasicInfo other)
         {
             if (!this.Id.HasValue || !other.Id.HasValue)
-                return null;
-            int result = this.Id.GetValueOrDefault().CompareTo(other.Id.GetValueOrDefault());
+                throw new InvalidOperationException("Can't operate on null Id or Data pairs!");
+            int result = this.Id.Value.CompareTo(other.Id.Value);
             if (result == 0)
-                if (!this.Data.HasValue || !other.Data.HasValue)
-                    return null;
-                else
-                    return this.Data.GetValueOrDefault().CompareTo(other.Id.GetValueOrDefault());
+                return this.Data.Value.CompareTo(other.Id.Value);
             else
                 return result;
         }
