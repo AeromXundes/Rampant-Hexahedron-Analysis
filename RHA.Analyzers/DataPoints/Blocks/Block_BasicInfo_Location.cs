@@ -12,9 +12,7 @@ namespace RHA.Analyzers.DataPoints.Blocks
     /// </summary>
     public class Block_BasicInfo_Location
         : Block_BasicInfo, IEquatable<Block_BasicInfo_Location>,
-        IEqualityComparer<Block_BasicInfo_Location>,
-        IComparable<Block_BasicInfo_Location>,
-        IComparer<Block_BasicInfo_Location>
+        IComparable<Block_BasicInfo_Location>
     {
         #region Constructors
         public Block_BasicInfo_Location()

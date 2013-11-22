@@ -13,11 +13,11 @@ namespace ClusterStatistics
         /// <summary>
         /// All the Id:Data pairs this cluster has.
         /// </summary>
-        public HashSet<Block_BasicInfo> IdsWithinThisCluster { get; }
+        public HashSet<Block_BasicInfo> IdsWithinThisCluster { get; private set; }
         /// <summary>
         /// The blocks in this cluster.
         /// </summary>
-        public List<Block_BasicInfo_Location> Blocks { get; }
+        public List<Block_BasicInfo_Location> Blocks { get; private set; }
         /// <summary>
         /// Add a block to this cluster.
         /// </summary>

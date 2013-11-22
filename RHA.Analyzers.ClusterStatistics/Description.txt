@@ -8,7 +8,7 @@ Brief description:
 	Provides a suite to analyze clusters of blocks. Intended for ore blocks, but can be used with any block id.
 	
 	* Statistics across all clusters in a game world.
-		* Perfect for mod developers tuning a mod's ore generation, or server admins wanting a bit extra ore for their players without giving too much extra.
+		* Perfect for mod developers tuning a mod's ore generation, or server admins tweaking the configs for a bit extra ore for their players and wanting to not give too much extra.
 	* Gives empirical data on clusters.
 		* No more guess-work when trying to figure out how much ore is enough.
 		* You don't have to play for hours to establish how much ore you need. Generate a world and analyze!
