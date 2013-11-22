@@ -30,6 +30,8 @@ using System.Threading.Tasks;
 namespace RHA.Analyzers.DataPoints.Blocks
 {
     public class Block_BasicInfo
+        : IEquatable<Block_BasicInfo>,
+        IComparable<Block_BasicInfo>
     {
         #region Constructors
         /// <summary>
@@ -110,5 +112,32 @@ namespace RHA.Analyzers.DataPoints.Blocks
         /// </summary>
         public string Name;
 
+        #region IEquatable Implementation
+        public bool Equals(Block_BasicInfo other)
+        {
+            return (this.Id == other.Id && this.Data == other.Data);
+        }
+        #endregion
+        #region IComparable Implementation
+        /// <summary>
+        /// Compares based on ID, then on Data. Ignores Name.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns>Returns null if either has nulled Ids, or if Ids are the same, if either Data is null.
+        /// Otherwise, it returns the comparison of Id, or in the case Id is the same, the comparison of Data.</returns>
+        public int? CompareTo(Block_BasicInfo other)
+        {
+            if (!this.Id.HasValue || !other.Id.HasValue)
+                return null;
+            int result = this.Id.GetValueOrDefault().CompareTo(other.Id.GetValueOrDefault());
+            if (result == 0)
+                if (!this.Data.HasValue || !other.Data.HasValue)
+                    return null;
+                else
+                    return this.Data.GetValueOrDefault().CompareTo(other.Id.GetValueOrDefault());
+            else
+                return result;
+        }
+        #endregion
     }
 }
