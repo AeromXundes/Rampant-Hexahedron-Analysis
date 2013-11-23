@@ -94,6 +94,25 @@ namespace RHA.Analyzers.DataPoints.Blocks
 
         #endregion
 
+        #region Chunk Coordinates
+        /// <summary>
+        /// This block's coordinate within a chunk.
+        /// </summary>
+        public int? XChunk { get { return XWorld % 16; } }
+        /// <summary>
+        /// This block's coordinate within a chunk.
+        /// </summary>
+        public int? ZChunk { get { return ZWorld % 16; } }
+        /// <summary>
+        /// The chunk coordinate this block is in.
+        /// </summary>
+        public int? ChunkX { get { return XWorld / 16; } }
+        /// <summary>
+        /// The chunk coordinate this block is in.
+        /// </summary>
+        public int? ChunkZ { get { return ZWorld / 16; } }
+        #endregion
+
         #region Distance Functions
         private double Distance(int x1, int y1, int z1, int x2, int y2, int z2)
         {
