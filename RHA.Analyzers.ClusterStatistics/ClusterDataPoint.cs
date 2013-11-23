@@ -8,6 +8,14 @@ using RHA.Analyzers.DataPoints.Blocks;
 
 namespace ClusterStatistics
 {
+    /// <summary>
+    /// A class for everything regarding a cluster of blocks.
+    /// Very much thread-unsafe, especially regarding centroid computation.
+    /// </summary>
+    /// <remarks>
+    /// Designed for a set of connected blocks, but there's no reason why it couldn't be used for an unconnected set of blocks.
+    /// You can only have one block in one block location. It just doesn't make sense any other way, and it allows the use of a HashSet for performance look ups.
+    /// </remarks>
     public class ClusterDataPoint
     {
         /// <summary>
@@ -16,8 +24,9 @@ namespace ClusterStatistics
         public HashSet<Block_BasicInfo> IdsWithinThisCluster { get; private set; }
         /// <summary>
         /// The blocks in this cluster.
+        /// It's a HashSet because you can't have more than one block in one location!
         /// </summary>
-        public List<Block_BasicInfo_Location> Blocks { get; private set; }
+        public HashSet<Block_BasicInfo_Location> Blocks { get; private set; }
         /// <summary>
         /// Add a block to this cluster.
         /// </summary>
@@ -55,83 +64,41 @@ namespace ClusterStatistics
         /// </summary>
         public int Count { get { return Blocks.Count; } }
 
-        /// <summary>
-        /// Determines whether the block location is in this cluster. Only compares location data; it ignores Id:Data values.
-        /// If location lies outside of the cubiod bounded by the min-max coords, it fails in O(1) time; otherwise, it is O(n).
-        /// </summary>
-        /// <param name="block">Block location</param>
-        /// <returns>Returns true if this cluster has this block location in it.</returns>
-        public bool ContainsLocation(Block_BasicInfo_Location block)
-        {
-            if (!block.XWorld.HasValue || !block.YWorld.HasValue || !block.ZWorld.HasValue)
-                throw new ArgumentException("block has a null coordinate.");
-            int x = block.XWorld.Value;
-            int y = block.YWorld.Value;
-            int z = block.ZWorld.Value;
-            
-            // check the O(1) stuff first
-            if (x > XMaxCoord)
-                return false;
-            if (x < XMinCoord)
-                return false;
-            if (y > YMaxCoord)
-                return false;
-            if (y < YMinCoord)
-                return false;
-            if (z > ZMaxCoord)
-                return false;
-            if (z < ZMinCoord)
-                return false;
-            
-            // okay, it /might/ be in the collection, run the O(n) operation.
-            return Blocks.Contains(block);
-        }
-        /// <summary>
-        /// Determines whether the block location is in this cluster. Only compares location data; it ignores Id:Data values.
-        /// If location lies outside of the cubiod bounded by the min-max coords, it fails in O(1) time; otherwise, it is O(n).
-        /// </summary>
-        /// <returns>Returns true if this cluster has this block location in it.</returns>
-        public bool ContainsLocation(int x, int y, int z)
-        {
-            return ContainsLocation(new Block_BasicInfo_Location(x, y, z));
-        }
-
         #region Centroid Stuff
         /// <summary>
-        /// Returns a location-info-only block with the centroid as the coordinates. Thread safe-ish.
+        /// Returns a location-info-only block with the centroid as the coordinates.
         /// </summary>
         /// <returns></returns>
         private void _UpdateCentroidBlock()
         {
-            lock (Blocks)
+            if (_CentroidBlockValid)
+                return;
+
+            int x = 0;
+            int y = 0;
+            int z = 0;
+
+            foreach (Block_BasicInfo_Location b in Blocks)
             {
-                if (_CentroidBlockValid)
-                    return;
-
-                int x = 0;
-                int y = 0;
-                int z = 0;
-
-                foreach (Block_BasicInfo_Location b in Blocks)
-                {
-                    x += b.XWorld.Value;
-                    y += b.YWorld.Value;
-                    z += b.ZWorld.Value;
-                }
-
-                x /= Blocks.Count;
-                y /= Blocks.Count;
-                z /= Blocks.Count;
-
-                _CentroidBlock = new Block_BasicInfo_Location(x, y, z);
-                _CentroidBlockValid = true;
+                x += b.XWorld.GetValueOrDefault();
+                y += b.YWorld.GetValueOrDefault();
+                z += b.ZWorld.GetValueOrDefault();
             }
+
+            x /= Blocks.Count;
+            y /= Blocks.Count;
+            z /= Blocks.Count;
+
+            _CentroidBlock = new Block_BasicInfo_Location(x, y, z);
+            _CentroidBlockValid = true;
         }
         private Block_BasicInfo_Location _CentroidBlock;
         private bool _CentroidBlockValid = false;
         /// <summary>
         /// The average Euclidian center of all the points.
-        /// The first operation and after invalidating operations (add, remove, etc.) is O(n), later operations are O(1).
+        /// Null coordinates are considered to be 0 for centroid computation.
+        /// Caches the result until an Add or Remove operation.
+        /// O(n) time for computation. O(1) time for retrieving the cached result.
         /// </summary>
         public Block_BasicInfo_Location CentroidBlock { get { _UpdateCentroidBlock(); return _CentroidBlock; } }
         #endregion
@@ -143,7 +110,7 @@ namespace ClusterStatistics
         /// <summary>
         /// The distance between YMaxCoord and YMinCoord
         /// </summary>
-        public int YHeight { get { return YMaxCoord - YMinCoord; } }
+        public int YLength { get { return YMaxCoord - YMinCoord; } }
         /// <summary>
         /// The distance between ZMaxCoord and ZMinCoord
         /// </summary>
