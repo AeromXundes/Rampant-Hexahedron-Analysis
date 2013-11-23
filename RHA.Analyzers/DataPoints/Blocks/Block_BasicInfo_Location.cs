@@ -176,9 +176,17 @@ namespace RHA.Analyzers.DataPoints.Blocks
             // Bitwise OR these together.
             // The y is put in the high order 8 bits
             // OPTIMIZE: Might be able to come up with a better hashing function.
+
+            // The idea is that the y-level will never be above 255, so shift that over to the last 2 bytes (<< 24)
+            // Most x and z coordinates are within 4096, so AND off anything higher. Move the the x coord inbetween the y and z coords.
+            // Remember, we're making a hashcode with an acceptable amount of colisions.
+            /*
+             * With each letter representing a 4-bit section, the format is:
+             * YYXX XZZZ
+             */
             int hCode = this.YWorld.GetValueOrDefault() << 24
-                      ^ this.XWorld.GetValueOrDefault() << 8
-                      ^ this.ZWorld.GetValueOrDefault();
+                      | (this.XWorld.GetValueOrDefault() & 0xFFF) << 8
+                      | (this.ZWorld.GetValueOrDefault() & 0xFFF);
             return hCode;
         }
         public override string ToString()
@@ -186,6 +194,15 @@ namespace RHA.Analyzers.DataPoints.Blocks
             return "X: " + (this.XWorld.HasValue ? this.XWorld.GetValueOrDefault().ToString() : "?")
                 + " Y: " + (this.YWorld.HasValue ? this.YWorld.GetValueOrDefault().ToString() : "?")
                 + " Z: " + (this.ZWorld.HasValue ? this.ZWorld.GetValueOrDefault().ToString() : "?");
+        }
+        /// <summary>
+        /// Compares the x,y, and z coordinates for equality.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns>Returns true when the x, y, and z coordinates are an exact match.</returns>
+        public override bool Equals(object obj)
+        {
+            return this.Equals(obj as Block_BasicInfo_Location);
         }
         #endregion
     }
