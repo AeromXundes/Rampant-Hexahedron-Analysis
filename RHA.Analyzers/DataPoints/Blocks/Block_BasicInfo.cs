@@ -30,8 +30,7 @@ using System.Threading.Tasks;
 namespace RHA.Analyzers.DataPoints.Blocks
 {
     /// <summary>
-    /// Stores Id:Data and Name information.
-    /// Compares based on 
+    /// Stores Id:Data and Name information. Immutable.
     /// </summary>
     public class Block_BasicInfo
         : IEquatable<Block_BasicInfo>,
@@ -43,9 +42,9 @@ namespace RHA.Analyzers.DataPoints.Blocks
         /// </summary>
         public Block_BasicInfo()
         {
-            this.Id = null;
-            this.Data = null;
-            this.Name = string.Empty;
+            this._Id = null;
+            this._Data = null;
+            this._Name = string.Empty;
         }
         /// <summary>
         /// Copy constructor.
@@ -53,9 +52,9 @@ namespace RHA.Analyzers.DataPoints.Blocks
         /// <param name="block">The BlockBasicInfo object to copy from.</param>
         public Block_BasicInfo(Block_BasicInfo Block)
         {
-            this.Id = Block.Id;
-            this.Data = Block.Data;
-            this.Name = Block.Name;
+            this._Id = Block.Id;
+            this._Data = Block.Data;
+            this._Name = Block.Name;
         }
         /// <summary>
         /// Constructor
@@ -63,9 +62,9 @@ namespace RHA.Analyzers.DataPoints.Blocks
         /// <param name="Id">The block Id.</param>
         public Block_BasicInfo(int Id)
         {
-            this.Id     = Id;
-            this.Data   = null;
-            this.Name   = string.Empty;
+            this._Id     = Id;
+            this._Data   = null;
+            this._Name   = string.Empty;
         }
         /// <summary>
         /// Constructor
@@ -74,9 +73,9 @@ namespace RHA.Analyzers.DataPoints.Blocks
         /// <param name="Name">The name of this block.</param>
         public Block_BasicInfo(int Id, string Name)
         {
-            this.Id     = Id;
-            this.Data   = null;
-            this.Name   = Name;
+            this._Id     = Id;
+            this._Data   = null;
+            this._Name   = Name;
         }
         /// <summary>
         /// Constructor
@@ -85,9 +84,9 @@ namespace RHA.Analyzers.DataPoints.Blocks
         /// <param name="Data">The block's data value.</param>
         public Block_BasicInfo(int Id, int Data)
         {
-            this.Id     = Id;
-            this.Data   = Data;
-            this.Name   = string.Empty;
+            this._Id     = Id;
+            this._Data   = Data;
+            this._Name   = string.Empty;
         }
         /// <summary>
         /// Constructor
@@ -97,24 +96,27 @@ namespace RHA.Analyzers.DataPoints.Blocks
         /// <param name="Name">The name of this block.</param>
         public Block_BasicInfo(int Id, int Data, string Name)
         {
-            this.Id     = Id;
-            this.Data   = Data;
-            this.Name   = Name;
+            this._Id     = Id;
+            this._Data   = Data;
+            this._Name   = Name;
         }
         #endregion
 
+        private readonly int? _Id;
         /// <summary>
         /// This block's ID.
         /// </summary>
-        public int? Id { get; set; }
+        public int? Id { get { return _Id; } }
+        private readonly int? _Data;
         /// <summary>
         /// The block's data value.
         /// </summary>
-        public int? Data { get; set; }
+        public int? Data { get { return _Data; } }
+        private readonly String _Name;
         /// <summary>
         /// The name of this block.
         /// </summary>
-        public string Name;
+        public string Name { get { return _Name; } }
 
         #region IEquatable Implementation
         /// <summary>
@@ -124,7 +126,7 @@ namespace RHA.Analyzers.DataPoints.Blocks
         /// <returns></returns>
         public bool Equals(Block_BasicInfo other)
         {
-            return (this.Id == other.Id && this.Data == other.Data);
+            return (this._Id == other.Id && this._Data == other.Data);
         }
         #endregion
         #region IComparable Implementation
@@ -136,13 +138,33 @@ namespace RHA.Analyzers.DataPoints.Blocks
         /// Otherwise, it returns the comparison of Id, or in the case Id is the same, the comparison of Data.</returns>
         public int CompareTo(Block_BasicInfo other)
         {
-            if (!this.Id.HasValue || !other.Id.HasValue)
+            if (!this._Id.HasValue || !other.Id.HasValue)
                 throw new InvalidOperationException("Can't operate on null Id or Data pairs!");
-            int result = this.Id.Value.CompareTo(other.Id.Value);
+            int result = this._Id.Value.CompareTo(other.Id.Value);
             if (result == 0)
-                return this.Data.Value.CompareTo(other.Id.Value);
+                return this._Data.Value.CompareTo(other.Id.Value);
             else
                 return result;
+        }
+        #endregion
+        #region Object Overrides
+        public override bool Equals(object obj)
+        {
+            return this.Equals(obj as Block_BasicInfo);
+        }
+        /// <summary>
+        /// Gets the hashcode of this object. Only hashes based on the Id and Data; Name is ignored.
+        /// Assuming Id is always less than 4096, and Data will remain less than 2^20, this hash is perfect.
+        /// These assumptions are valid as of MC 1.7.1 (11/23/2013).
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            return (this.Id.GetValueOrDefault() << 24) & this.Data.GetValueOrDefault();
+        }
+        public override string ToString()
+        {
+            return "Id:Data: " + this.Id + ":" + this.Data + " Name: " + this.Name;
         }
         #endregion
     }
