@@ -1,6 +1,7 @@
 ﻿Cluster Statistics
 An addin library for Rampant Hexahedron Analysis (RHA)
-By Aerom Xundes
+Licensed under the GPLv3, see LICENSE.txt.
+Written by Aerom Xundes
 
 Part of a programming project for CS-1332 at Georgia Tech during the Fall 2013 Semester.
 

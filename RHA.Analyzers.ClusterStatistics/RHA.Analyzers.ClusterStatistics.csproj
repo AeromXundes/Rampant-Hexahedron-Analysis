@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Description.txt" />
+    <Content Include="LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RHA.Analyzers\RHA.Analyzers.csproj">
