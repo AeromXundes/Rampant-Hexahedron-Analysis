@@ -27,6 +27,13 @@ Cluster analysis
 				this might break for diagonal clusters
 	per biome
 	
+	Cluster between chunks are merged
+		Go across horizontally and merge each chunk's clusters. Each chunk will be locked while merging.
+		Go across vertically and merge those chunks's clusters. Again, each will be locked.
+		For each potental merge:
+			Add all clusters with a AMaxCoordinate at the edge of the chunk (where A is either the X or Z plane) to a list.
+			Foreach cluster in that list, merge clusters where the clusters are adjacent across chunk boundaries.
+
 Stuff this project might find useful:
 	Locality-sensitive hashing
 	Nearest neighbor search
