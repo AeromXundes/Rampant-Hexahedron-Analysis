@@ -50,6 +50,7 @@
     <Compile Include="AnalyzerInfo.cs" />
     <Compile Include="AnalyzerState.cs" />
     <Compile Include="BaseImplementations\ParallelChunkAnalyzer.cs" />
+    <Compile Include="DataPoints\Biome.cs" />
     <Compile Include="DataPoints\Blocks\Block_BasicInfo_Location.cs" />
     <Compile Include="DataPoints\Blocks\Block_BasicInfo.cs" />
     <Compile Include="IAnalyzer.cs" />
