@@ -45,6 +45,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="CS MC Project.txt" />
     <Content Include="Description.txt" />
     <Content Include="LICENSE.txt" />
   </ItemGroup>

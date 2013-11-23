@@ -229,7 +229,7 @@ namespace RHA.Analyzers.BaseImplementations
 
                 // Read the chunk blocks from the disk.
                 // Called on this thread.
-                IO.ChunkBlocks blocks = IO.ChunkReader.ReadChunk(chunk);
+                IO.ChunkBlocks<RHA.Analyzers.DataPoints.Blocks.Block_BasicInfo> blocks = IO.ChunkReader.ReadChunk(chunk);
 
                 // Queue the chunk blocks just read to be analyzed.
                 // Analysis is done on a *seperate thread*.
@@ -311,7 +311,7 @@ namespace RHA.Analyzers.BaseImplementations
         /// <param name="Chunk">The chunk data.</param>
         /// <param name="CancelToken">The CancelToken cancel requests will be passed by.</param>
         /// <returns>Returns the results from analysis.</returns>
-        protected abstract T Analyze(IO.ChunkBlocks Chunk, CancellationToken CancelToken);
+        protected abstract T Analyze(IO.ChunkBlocks<RHA.Analyzers.DataPoints.Blocks.Block_BasicInfo> Chunk, CancellationToken CancelToken);
         /// <summary>
         /// Function to tabulate the data collected by Analyze().
         /// Default Main() behavior is to wait for all Analyze tasks to complete before calling this function.

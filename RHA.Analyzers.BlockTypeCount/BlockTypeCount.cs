@@ -41,7 +41,7 @@ namespace RHA.Analyzers.BlockTypeCount
             return __Results;
         }
 
-        protected override Dictionary<Block_BasicInfo,long> Analyze(IO.ChunkBlocks Chunk, System.Threading.CancellationToken CancelToken)
+        protected override Dictionary<Block_BasicInfo,long> Analyze(IO.ChunkBlocks<Block_BasicInfo> Chunk, System.Threading.CancellationToken CancelToken)
         {
             Dictionary<Block_BasicInfo, long> data = new Dictionary<Block_BasicInfo, long>();
 

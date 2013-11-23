@@ -35,9 +35,9 @@ namespace RHA.Analyzers.IO
 {
     public static class ChunkReader
     {
-        public static ChunkBlocks ReadChunk(Substrate.ChunkRef Chunk)
+        public static ChunkBlocks<Block_BasicInfo> ReadChunk(Substrate.ChunkRef Chunk)
         {
-            ChunkBlocks blocks = new ChunkBlocks(Chunk.Blocks.XDim, Chunk.Blocks.YDim, Chunk.Blocks.ZDim, Chunk.X, Chunk.Z);
+            ChunkBlocks<Block_BasicInfo> blocks = new ChunkBlocks<Block_BasicInfo>(Chunk.Blocks.XDim, Chunk.Blocks.YDim, Chunk.Blocks.ZDim, Chunk.X, Chunk.Z);
 
             int xdim = Chunk.Blocks.XDim;
             int ydim = Chunk.Blocks.YDim;

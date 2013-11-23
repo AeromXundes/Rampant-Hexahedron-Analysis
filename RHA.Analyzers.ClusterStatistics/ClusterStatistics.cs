@@ -29,10 +29,12 @@ using System.Threading.Tasks;
 
 using RHA.Analyzers.BaseImplementations;
 using RHA.Analyzers.DataPoints;
+using RHA.Analyzers.DataPoints.Blocks;
+using RHA.Analyzers.IO;
 
 namespace ClusterStatistics
 {
-    class ClusterStatistics : ParallelChunkAnalyzer<List<object>>
+    class ClusterStatistics : ParallelChunkAnalyzer<List<ClusterDataPoint>>
     {
         public override RHA.Analyzers.AnalyzerInfo AnalyzerInfo
         {
@@ -81,14 +83,29 @@ Limitations of this analyzer:
             throw new NotImplementedException();
         }
 
-        protected override List<object> Analyze(RHA.Analyzers.IO.ChunkBlocks Chunk, System.Threading.CancellationToken CancelToken)
+        protected RHA.Analyzers.IO.ChunkBlocks<Block_BasicInfo_Location> FilterBlocks(RHA.Analyzers.IO.ChunkBlocks<Block_BasicInfo> Chunk, HashSet<Block_BasicInfo> IdFilter)
+        {
+            ChunkBlocks<Block_BasicInfo_Location> results = new ChunkBlocks<Block_BasicInfo_Location>(Chunk.ChunkX, Chunk.ChunkZ);
+
+            foreach (Block_BasicInfo b in Chunk)
+            {
+                if (!Ids.Contains(b))
+                    continue;   // If the block Id:Data pair isn't in the Id set, skip this block.
+
+            }
+            return null;
+        }
+
+        protected override List<ClusterDataPoint> Analyze(RHA.Analyzers.IO.ChunkBlocks<Block_BasicInfo> Chunk, System.Threading.CancellationToken CancelToken)
         {
             throw new NotImplementedException();
         }
 
-        protected override void Summarize(List<object>[] Data, System.Threading.CancellationToken CancelToken)
+        protected override void Summarize(List<ClusterDataPoint>[] Data, System.Threading.CancellationToken CancelToken)
         {
             throw new NotImplementedException();
         }
+
+        protected HashSet<Block_BasicInfo> Ids;
     }
 }

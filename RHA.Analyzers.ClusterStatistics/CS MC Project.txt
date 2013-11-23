@@ -1,0 +1,37 @@
+Algorithm
+	Get data.
+	Separate into different IDs.
+		Can select only one ID for further analysis, or analyze all of them.
+		Each unique ID and data value pair is separated.
+	If needed, combine select ID:Data pairs.
+	Now we have just the blocks we are interested in, we should analyze now.
+
+Cluster detection
+	Start with a single block, add it to a new cluster object.
+	Find all blocks that are within 1 block of each other, including diagonal distance.
+		Similar to MST
+		This will not separate the clusters that overlapped.
+
+Cluster analysis
+	stats:
+		Blocks per cluster
+		clusters per chunk
+		blocks per chunk (general stat, tho)
+		location of clusters
+			horizontal
+			vertical
+			both global and chunk-wise.
+		length/width/height of clusters
+		shape of clusters:
+			for all clusters with longer in a particular direction, this what we found on average (show graph)
+				this might break for diagonal clusters
+	per biome
+	
+Stuff this project might find useful:
+	Locality-sensitive hashing
+	Nearest neighbor search
+	http://en.wikipedia.org/wiki/Cluster_analysis
+	
+Further development:
+	for the mod Custom Ore Generation, the OPTICS alg would make for a perfect fit.
+		http://en.wikipedia.org/wiki/OPTICS_algorithm

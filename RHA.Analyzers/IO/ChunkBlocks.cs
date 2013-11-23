@@ -31,7 +31,7 @@ using RHA.Analyzers.DataPoints.Blocks;
 
 namespace RHA.Analyzers.IO
 {
-    public class ChunkBlocks : IEnumerable<Block_BasicInfo>
+    public class ChunkBlocks<T> : IEnumerable<T>
     {
         public static int DefaultXDim = 16;
         public static int DefaultYDim = 256;
@@ -44,7 +44,7 @@ namespace RHA.Analyzers.IO
             this.YDim = DefaultYDim;
             this.ZDim = DefaultZDim;
 
-            this.Blocks = new Block_BasicInfo[XDim, YDim, ZDim];
+            this.Blocks = new T[XDim, YDim, ZDim];
             this.ChunkX = -1;
             this.ChunkZ = -1;
         }
@@ -52,13 +52,13 @@ namespace RHA.Analyzers.IO
         /// Deep-copy constructor. Copies the whole Blocks array, so be careful when using this.
         /// </summary>
         /// <param name="blocks"></param>
-        public ChunkBlocks(ChunkBlocks blocks)
+        public ChunkBlocks(ChunkBlocks<T> blocks)
         {
             this.XDim = blocks.XDim;
             this.YDim = blocks.YDim;
             this.ZDim = blocks.ZDim;
 
-            this.Blocks = new Block_BasicInfo[XDim, YDim, ZDim];
+            this.Blocks = new T[XDim, YDim, ZDim];
             for (int x = 0; x < XDim; x += 1)
             {
                 for (int y = 0; y < YDim; y += 1)
@@ -79,7 +79,7 @@ namespace RHA.Analyzers.IO
             this.YDim = DefaultYDim;
             this.ZDim = DefaultZDim;
 
-            this.Blocks = new Block_BasicInfo[XDim, YDim, ZDim];
+            this.Blocks = new T[XDim, YDim, ZDim];
             this.ChunkX = ChunkX;
             this.ChunkZ = ChunkZ;
         }
@@ -89,7 +89,7 @@ namespace RHA.Analyzers.IO
             this.YDim = YDim;
             this.ZDim = ZDim;
 
-            this.Blocks = new Block_BasicInfo[XDim, YDim, ZDim];
+            this.Blocks = new T[XDim, YDim, ZDim];
             this.ChunkX = -1;
             this.ChunkZ = -1;
         }
@@ -99,7 +99,7 @@ namespace RHA.Analyzers.IO
             this.YDim = YDim;
             this.ZDim = ZDim;
 
-            this.Blocks = new Block_BasicInfo[XDim, YDim, ZDim];
+            this.Blocks = new T[XDim, YDim, ZDim];
             this.ChunkX = ChunkX;
             this.ChunkZ = ChunkY;
         }
@@ -109,7 +109,7 @@ namespace RHA.Analyzers.IO
         public int YDim { get; protected set; }
         public int ZDim { get; protected set; }
 
-        public Block_BasicInfo[, ,] Blocks { get; protected set; }
+        public T[, ,] Blocks { get; protected set; }
 
         public int ChunkX { get; protected set; }
         public int ChunkZ { get; protected set; }
@@ -118,16 +118,16 @@ namespace RHA.Analyzers.IO
         /// Get the Nth X plane of the chunk.
         /// </summary>
         /// <param name="X">The nth X-plane of the chunk. Zero indexed. Must be 0 &lt;= X &lt; XDim.</param>
-        /// <returns>Block_BasicInfo[YDim, ZDim]</returns>
+        /// <returns>T[YDim, ZDim]</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when X &gt; XDim or X &lt; 0.</exception>
-        public Block_BasicInfo[,] GetSliceX(int X)
+        public T[,] GetSliceX(int X)
         {
             if (X > XDim)
                 throw new ArgumentOutOfRangeException("X", "X cannot exceed BlocksFromChunk.XDim (" + this.XDim + ").");
             if (X < 0)
                 throw new ArgumentOutOfRangeException("X", "X cannot be less than zero.");
 
-            Block_BasicInfo[,] data = new Block_BasicInfo[YDim, ZDim];
+            T[,] data = new T[YDim, ZDim];
             for (int i = 0; i < YDim; i += 1)
             {
                 for (int j = 0; j < ZDim; j += 1)
@@ -141,16 +141,16 @@ namespace RHA.Analyzers.IO
         /// Get the Nth Y plane of the chunk.
         /// </summary>
         /// <param name="Y">The nth Y-plane of the chunk. Zero indexed. Must be 0 &lt;= Y &lt; YDim.</param>
-        /// <returns>Block_BasicInfo[XDim, ZDim].</returns>
+        /// <returns>T[XDim, ZDim].</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when Y &gt; YDim or Y &lt; 0.</exception>
-        public Block_BasicInfo[,] GetSliceY(int Y)
+        public T[,] GetSliceY(int Y)
         {
             if (Y > YDim)
                 throw new ArgumentOutOfRangeException("Y", "Y cannot exceed BlocksFromChunk.YDim (" + this.YDim + ").");
             if (Y < 0)
                 throw new ArgumentOutOfRangeException("Y", "Y cannot be less than zero.");
 
-            Block_BasicInfo[,] data = new Block_BasicInfo[XDim, ZDim];
+            T[,] data = new T[XDim, ZDim];
             for (int i = 0; i < XDim; i += 1)
             {
                 for (int j = 0; j < ZDim; j += 1)
@@ -164,16 +164,16 @@ namespace RHA.Analyzers.IO
         /// Get the Nth Z plane of the chunk.
         /// </summary>
         /// <param name="Z">The nth Z-plane of the chunk. Zero indexed. Must be 0 &lt;= Z &lt; ZDim.</param>
-        /// <returns>Block_BasicInfo[XDim, YDim].</returns>
+        /// <returns>T[XDim, YDim].</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when Z &gt; ZDim or Z &lt; 0.</exception>
-        public Block_BasicInfo[,] GetSliceZ(int Z)
+        public T[,] GetSliceZ(int Z)
         {
             if (Z > ZDim)
                 throw new ArgumentOutOfRangeException("Z", "Z cannot exceed BlocksFromChunk.ZDim (" + this.ZDim + ").");
             if (Z < 0)
                 throw new ArgumentOutOfRangeException("Z", "Z cannot be less than zero.");
 
-            Block_BasicInfo[,] data = new Block_BasicInfo[XDim, YDim];
+            T[,] data = new T[XDim, YDim];
             for (int i = 0; i < XDim; i += 1)
             {
                 for (int j = 0; j < YDim; j += 1)
@@ -184,7 +184,7 @@ namespace RHA.Analyzers.IO
             return data;
         }
 
-        public Block_BasicInfo this[int x, int y, int z]
+        public T this[int x, int y, int z]
         {
             get
             {
@@ -196,17 +196,17 @@ namespace RHA.Analyzers.IO
             }
         }
 
-        public Block_BasicInfo GetBlock(int x, int y, int z)
+        public T GetBlock(int x, int y, int z)
         {
             return this.Blocks[x, y, z];
         }
-        public void SetBlock(int x, int y, int z, Block_BasicInfo block)
+        public void SetBlock(int x, int y, int z, T block)
         {
             this.Blocks[x, y, z] = block;
         }
 
         #region IEnumerable Interface Implementations
-        public IEnumerator<Block_BasicInfo> GetEnumerator()
+        public IEnumerator<T> GetEnumerator()
         {
             for (int x = 0; x < XDim; x += 1)
             {
