@@ -87,18 +87,98 @@ Limitations of this analyzer:
         {
             ChunkBlocks<Block_BasicInfo_Location> results = new ChunkBlocks<Block_BasicInfo_Location>(Chunk.ChunkX, Chunk.ChunkZ);
 
-            foreach (Block_BasicInfo b in Chunk)
-            {
-                if (!Ids.Contains(b))
-                    continue;   // If the block Id:Data pair isn't in the Id set, skip this block.
+            for (int x = 0; x < Chunk.XDim; x++)
+			{
+                for (int z = 0; z < Chunk.ZDim; z++)
+                {
+                    for (int y = 0; y < Chunk.YDim; y++)
+                    {
+                        if (IdFilter.Contains(Chunk[x,y,z]))
+                            results[x, y, z] = new Block_BasicInfo_Location(
+                                Chunk[x, y, z],
+                                Chunk.ChunkX * Chunk.XDim + x,
+                                y,
+                                Chunk.ChunkZ * Chunk.ZDim + z
+                                );
+                    }
+                }
+			}
+            return results;
+        }
 
+        /// <summary>
+        /// Gets the neighbors of OriginBlock in FilteredChunk that aren't null and are within DistMax distance of OriginBlock (each plane's distance is independant).
+        /// </summary>
+        /// <param name="FilteredChunk">A chunk that only has the block types you're interested in.</param>
+        /// <param name="OriginBlock">The central block to get the neighbors from.</param>
+        /// <param name="xDistMax">The max distance in the x-plane.</param>
+        /// <param name="yDistMax">The max distance in the y-plane.</param>
+        /// <param name="zDistMax">The max distance in the z-plane.</param>
+        /// <returns>A list of all the neighbors within DistMax of the OriginBlock. Includes the OriginBlock.</returns>
+        protected List<Block_BasicInfo_Location> GetNeighbors(ChunkBlocks<Block_BasicInfo_Location> FilteredChunk, Block_BasicInfo_Location OriginBlock, int xDistMax, int yDistMax, int zDistMax)
+        {
+            List<Block_BasicInfo_Location> neighbors = new List<Block_BasicInfo_Location>(xDistMax * yDistMax * zDistMax);
+            for (int x = Math.Max(OriginBlock.XChunk.Value - xDistMax, 0); x < Math.Min(xDistMax, FilteredChunk.XDim); x++)
+            {
+                for (int z = Math.Max(OriginBlock.ZChunk.Value - zDistMax, 0); z < Math.Min(zDistMax, FilteredChunk.XDim); z++)
+                {
+                    for (int y = Math.Max(OriginBlock.YWorld.Value - yDistMax, 0); y < Math.Min(yDistMax, FilteredChunk.XDim); y++)
+                    {
+                        if(FilteredChunk[x,y,z] != null)
+                            neighbors.Add(FilteredChunk[x, y, z]);
+                    }
+                }
             }
-            return null;
+            return neighbors;
+        }
+
+        protected ClusterDataPoint ClusterDetection(ChunkBlocks<Block_BasicInfo_Location> FilterChunk, Block_BasicInfo_Location OriginBlock, int xDistMax, int yDistMax, int zDistMax)
+        {
+            ClusterDataPoint cluster = new ClusterDataPoint();
+
+            List<Block_BasicInfo_Location> notAdded = new List<Block_BasicInfo_Location>(FilterChunk.Where(x => x != null));
+
+            while (notAdded.Count != 0)
+            {
+                List<Block_BasicInfo_Location> neighbors = GetNeighbors(FilterChunk, notAdded[0], xDistMax, yDistMax, zDistMax);
+                cluster.AddBlocks(neighbors);
+                foreach (Block_BasicInfo_Location block in neighbors)
+                    notAdded.Remove(block);
+            }
+
+            return cluster;
+        }
+
+        protected List<ClusterDataPoint> GetClusters(ChunkBlocks<Block_BasicInfo_Location> FilteredChunk, int xDistMax, int yDistMax, int zDistMax)
+        {
+            List<ClusterDataPoint> clusters = new List<ClusterDataPoint>();
+            for (int x = 0; x < FilteredChunk.XDim; x++)
+            {
+                for (int z = 0; z < FilteredChunk.ZDim; z++)
+                {
+                    for (int y = 0; y < FilteredChunk.YDim; y++)
+                    {
+                        if (FilteredChunk[x, y, z] != null)
+                            clusters.Add(ClusterDetection(FilteredChunk, FilteredChunk[x, y, z], xDistMax, yDistMax, zDistMax));
+                    }
+                }
+            }
+            return clusters;
         }
 
         protected override List<ClusterDataPoint> Analyze(RHA.Analyzers.IO.ChunkBlocks<Block_BasicInfo> Chunk, System.Threading.CancellationToken CancelToken)
         {
-            throw new NotImplementedException();
+            List<ClusterDataPoint> clusters = new List<ClusterDataPoint>();
+            List<ChunkBlocks<Block_BasicInfo_Location>> filteredChunks = new List<ChunkBlocks<Block_BasicInfo_Location>>(Ids.Count);
+            foreach (HashSet<Block_BasicInfo> ids in Ids)
+            {
+                filteredChunks.Add(FilterBlocks(Chunk, ids));
+            }
+            foreach (ChunkBlocks<Block_BasicInfo_Location> filteredChunk in filteredChunks)
+            {
+                clusters.AddRange(GetClusters(filteredChunk, this.XAbsMaxDist, this.YAbsMaxDist, this.ZAbsMaxDist));
+            }
+            return clusters;
         }
 
         protected override void Summarize(List<ClusterDataPoint>[] Data, System.Threading.CancellationToken CancelToken)
@@ -106,6 +186,9 @@ Limitations of this analyzer:
             throw new NotImplementedException();
         }
 
-        protected HashSet<Block_BasicInfo> Ids;
+        protected List<HashSet<Block_BasicInfo>> Ids;
+        protected int XAbsMaxDist;
+        protected int YAbsMaxDist;
+        protected int ZAbsMaxDist;
     }
 }
