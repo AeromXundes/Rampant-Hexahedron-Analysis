@@ -15,51 +15,59 @@ namespace RHA.Analyzers.DataPoints.Blocks
         IComparable<Block_BasicInfo_Location>
     {
         #region Constructors
+        /// <summary>
+        /// Default constructor. Sets all coordinates to null.
+        /// </summary>
         public Block_BasicInfo_Location()
         {
-
+            this._XWorld = null;
+            this._YWorld = null;
+            this._ZWorld = null;
         }
         public Block_BasicInfo_Location(Block_BasicInfo BasicBlock, int xWorld, int yWorld, int zWorld)
             :base(BasicBlock)
         {
-            this.XWorld = xWorld;
-            this.YWorld = yWorld;
-            this.ZWorld = zWorld;
+            this._XWorld = xWorld;
+            this._YWorld = yWorld;
+            this._ZWorld = zWorld;
         }
-        public Block_BasicInfo_Location(int xWorld, int yWorld, int zWorld)
+        public Block_BasicInfo_Location(int? xWorld, int? yWorld, int? zWorld)
         {
-            this.XWorld = xWorld;
-            this.YWorld = yWorld;
-            this.ZWorld = zWorld;
+            this._XWorld = xWorld;
+            this._YWorld = yWorld;
+            this._ZWorld = zWorld;
         }
         /// <summary>
         /// 2D Constructor
         /// NOTE: this constructor only takes X and Z coordinates NOT X and *Y*.
+        /// Sets YWorld to null.
         /// </summary>
         /// <param name="xWorld"></param>
         /// <param name="zWorld"></param>
         public Block_BasicInfo_Location(int xWorld, int zWorld)
         {
-            this.XWorld = xWorld;
-            this.ZWorld = zWorld;
+            this._XWorld = xWorld;
+            this._YWorld = null;
+            this._ZWorld = zWorld;
         }
         #endregion
 
         #region Coordinates
+        private readonly int? _XWorld;
         /// <summary>
         /// The x-coordinate in the game world.
         /// </summary>
-        public int? XWorld { get; set; }
-
+        public int? XWorld { get { return _XWorld; } }
+        private readonly int? _YWorld;
         /// <summary>
         /// The y-coordinate in the game world.
         /// </summary>
-        public int? YWorld { get; set; }
-
+        public int? YWorld { get { return _YWorld; } }
+        private readonly int? _ZWorld;
         /// <summary>
         /// The z-coordinate in the game world.
         /// </summary>
-        public int? ZWorld { get; set; }
+        public int? ZWorld { get { return _ZWorld; } }
 
         #endregion
 
