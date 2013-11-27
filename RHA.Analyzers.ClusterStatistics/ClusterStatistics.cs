@@ -333,6 +333,10 @@ Limitations of this analyzer:
             int minZ = orderedChunkClusters.Keys.Min(tuple => tuple.Item2);
             int maxZ = orderedChunkClusters.Keys.Max(tuple => tuple.Item2);
 
+            //OPTIMIZE: These two loops are just begging to be parallelized.
+            // Theoretically could have a thread for each row and column since merging each row and column is independant from everything else (just lock the necessary chunks).
+            // Could alternate threads (even and odd or something like that)
+
             // merge clusters in the X+ direction
             for(int x = minX; x < maxX; x++)
             {
