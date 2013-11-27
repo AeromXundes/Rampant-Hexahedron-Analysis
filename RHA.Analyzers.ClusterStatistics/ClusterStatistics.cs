@@ -83,6 +83,12 @@ Limitations of this analyzer:
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Filters a chunk based on an IdFilter. The Id:Data pairs are both compared, not just the Id.
+        /// </summary>
+        /// <param name="Chunk">The chunk to filter. It won't be altered.</param>
+        /// <param name="IdFilter">The Id:Data pairs to keep.</param>
+        /// <returns>Returns a new filtered chunk with only the blocks with matching Id:Data pairs in IdFilter.</returns>
         protected RHA.Analyzers.IO.ChunkBlocks<Block_BasicInfo_Location> FilterBlocks(RHA.Analyzers.IO.ChunkBlocks<Block_BasicInfo> Chunk, HashSet<Block_BasicInfo> IdFilter)
         {
             ChunkBlocks<Block_BasicInfo_Location> results = new ChunkBlocks<Block_BasicInfo_Location>(Chunk.ChunkX, Chunk.ChunkZ);
@@ -133,8 +139,32 @@ Limitations of this analyzer:
             return neighbors;
         }
 
+        /// <summary>
+        /// Finds the cluster OriginBlock is contained within.
+        /// </summary>
+        /// <param name="FilteredChunk">A chunk with only the types of blocks we care about.</param>
+        /// <param name="OriginBlock">The block we want to start from.</param>
+        /// <param name="xDistMax">Max abs distance in the x plane.</param>
+        /// <param name="yDistMax">Max abs distance in the y plane.</param>
+        /// <param name="zDistMax">Max abs distance in the z plane.</param>
+        /// <returns>Returns a ClusterDataPoint containing all the blocks within the distance of the DistMax vars.</returns>
+        /// <remarks>
+        /// It is important to note this function considers blocks in a cluster by finding any block within the DistMax vars, not just OriginBlock.
+        /// 
+        /// For example, consider these blocks in the x-plane. We will only concern ourselves with one dimension, but it trivial to extend to the others.
+        /// 
+        ///  Location: 0 1 2 3 4 5 6 7 8
+        /// Block T/F: _ X X X X _ X X _
+        /// 
+        /// With xDistMax = 1, blocks {1,2,3,4} are a cluster and blocks {6,7} are another.
+        /// Starting at block 1, we still get {1,2,3,4} as a cluster, even though block 4 is farther than 1 block from the OriginBlock.
+        /// This is because block 2 is within xDistMax of the OriginBlock, block 3 is within xDistMax from block 2, and so on.
+        /// Regardless of what block in a cluster is the OriginBlock, all blocks within the cluster will be found.
+        /// </remarks>
         protected ClusterDataPoint ClusterFromSingleBlock(ChunkBlocks<Block_BasicInfo_Location> FilteredChunk, Block_BasicInfo_Location OriginBlock, int xDistMax, int yDistMax, int zDistMax)
         {
+            if (OriginBlock == null)
+                throw new ArgumentNullException("OriginBlock");
             ClusterDataPoint cluster = new ClusterDataPoint();
             Queue<Block_BasicInfo_Location> yetToDiscoverNeighbors = new Queue<Block_BasicInfo_Location>();
 
@@ -161,17 +191,19 @@ Limitations of this analyzer:
         protected List<ClusterDataPoint> GetClusters(ChunkBlocks<Block_BasicInfo_Location> FilteredChunk, int xDistMax, int yDistMax, int zDistMax)
         {
             List<ClusterDataPoint> clusters = new List<ClusterDataPoint>();
-            for (int x = 0; x < FilteredChunk.XDim; x++)
+            // Get all the blocks that aren't null.
+            List<Block_BasicInfo_Location> blocksNotInACluster = new List<Block_BasicInfo_Location>(FilteredChunk.Where(x => x != null));
+
+            while (blocksNotInACluster.Count != 0)
             {
-                for (int z = 0; z < FilteredChunk.ZDim; z++)
-                {
-                    for (int y = 0; y < FilteredChunk.YDim; y++)
-                    {
-                        if (FilteredChunk[x, y, z] != null)
-                            clusters.Add(ClusterFromSingleBlock(FilteredChunk, FilteredChunk[x, y, z], xDistMax, yDistMax, zDistMax));
-                    }
-                }
+                // It doesn't matter which block we choose. Choose the last to hopefully reduce the element shifting required a bit when we remove the blocks we find in the cluster.
+                Block_BasicInfo_Location block = blocksNotInACluster.Last();
+                ClusterDataPoint tempCluster = ClusterFromSingleBlock(FilteredChunk, block, xDistMax, yDistMax, zDistMax);
+                // Remove all the blocks in blocksNotInACluster that are in tempCluster.
+                blocksNotInACluster.RemoveAll(x => tempCluster.Blocks.Contains(x));
+                clusters.Add(tempCluster);
             }
+
             return clusters;
         }
 
@@ -192,6 +224,7 @@ Limitations of this analyzer:
 
         protected override void Summarize(List<ClusterDataPoint>[] Data, System.Threading.CancellationToken CancelToken)
         {
+            
             throw new NotImplementedException();
         }
 
