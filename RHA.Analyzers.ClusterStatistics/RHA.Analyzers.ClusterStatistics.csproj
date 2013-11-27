@@ -45,6 +45,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="3D_Graphing.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="3D_Graphing.Designer.cs">
+      <DependentUpon>3D_Graphing.cs</DependentUpon>
+    </Compile>
     <Compile Include="AggregateClusterStats.cs" />
     <Compile Include="ClusterDataPoint.cs" />
     <Compile Include="ClusterStatistics.cs" />
@@ -80,6 +86,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="3D_Graphing.resx">
+      <DependentUpon>3D_Graphing.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ClusterStatisticsResultsForm.resx">
       <DependentUpon>ClusterStatisticsResultsForm.cs</DependentUpon>
     </EmbeddedResource>
