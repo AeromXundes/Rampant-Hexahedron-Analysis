@@ -114,7 +114,7 @@ Limitations of this analyzer:
         /// <param name="xDistMax">The max distance in the x-plane.</param>
         /// <param name="yDistMax">The max distance in the y-plane.</param>
         /// <param name="zDistMax">The max distance in the z-plane.</param>
-        /// <returns>A list of all the neighbors within DistMax of the OriginBlock. Includes the OriginBlock.</returns>
+        /// <returns>A list of all the neighbors within DistMax of the OriginBlock. Does NOT include the OriginBlock.</returns>
         protected List<Block_BasicInfo_Location> GetNeighbors(ChunkBlocks<Block_BasicInfo_Location> FilteredChunk, Block_BasicInfo_Location OriginBlock, int xDistMax, int yDistMax, int zDistMax)
         {
             List<Block_BasicInfo_Location> neighbors = new List<Block_BasicInfo_Location>(xDistMax * yDistMax * zDistMax);
@@ -125,27 +125,36 @@ Limitations of this analyzer:
                     for (int y = Math.Max(OriginBlock.YWorld.Value - yDistMax, 0); y < Math.Min(yDistMax, FilteredChunk.XDim); y++)
                     {
                         if(FilteredChunk[x,y,z] != null)
-                            neighbors.Add(FilteredChunk[x, y, z]);
+                            if(!FilteredChunk[x,y,z].Equals(OriginBlock)) // .Equals to compare across the coordinates.
+                                neighbors.Add(FilteredChunk[x, y, z]);
                     }
                 }
             }
             return neighbors;
         }
 
-        protected ClusterDataPoint ClusterDetection(ChunkBlocks<Block_BasicInfo_Location> FilterChunk, Block_BasicInfo_Location OriginBlock, int xDistMax, int yDistMax, int zDistMax)
+        protected ClusterDataPoint ClusterFromSingleBlock(ChunkBlocks<Block_BasicInfo_Location> FilteredChunk, Block_BasicInfo_Location OriginBlock, int xDistMax, int yDistMax, int zDistMax)
         {
             ClusterDataPoint cluster = new ClusterDataPoint();
+            Queue<Block_BasicInfo_Location> yetToDiscoverNeighbors = new Queue<Block_BasicInfo_Location>();
 
-            List<Block_BasicInfo_Location> notAdded = new List<Block_BasicInfo_Location>(FilterChunk.Where(x => x != null));
+            // Obviously OriginBlock is in the cluster...
+            cluster.AddBlock(OriginBlock);
+            yetToDiscoverNeighbors.Enqueue(OriginBlock);
 
-            while (notAdded.Count != 0)
+            while (yetToDiscoverNeighbors.Count != 0)
             {
-                List<Block_BasicInfo_Location> neighbors = GetNeighbors(FilterChunk, notAdded[0], xDistMax, yDistMax, zDistMax);
-                cluster.AddBlocks(neighbors);
-                foreach (Block_BasicInfo_Location block in neighbors)
-                    notAdded.Remove(block);
+                Block_BasicInfo_Location current = yetToDiscoverNeighbors.Dequeue();
+                List<Block_BasicInfo_Location> neighbors = GetNeighbors(FilteredChunk, current, xDistMax, yDistMax, zDistMax);
+                foreach (Block_BasicInfo_Location b in neighbors)
+                {
+                    if (!cluster.Blocks.Contains(b))
+                    {
+                        cluster.AddBlock(b);
+                        yetToDiscoverNeighbors.Enqueue(b);
+                    }
+                }
             }
-
             return cluster;
         }
 
@@ -159,7 +168,7 @@ Limitations of this analyzer:
                     for (int y = 0; y < FilteredChunk.YDim; y++)
                     {
                         if (FilteredChunk[x, y, z] != null)
-                            clusters.Add(ClusterDetection(FilteredChunk, FilteredChunk[x, y, z], xDistMax, yDistMax, zDistMax));
+                            clusters.Add(ClusterFromSingleBlock(FilteredChunk, FilteredChunk[x, y, z], xDistMax, yDistMax, zDistMax));
                     }
                 }
             }
