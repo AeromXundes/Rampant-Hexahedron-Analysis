@@ -184,6 +184,48 @@ namespace RHA.Analyzers.IO
             return data;
         }
 
+        /// <summary>
+        /// Get a volume bounded by x, y, and z (each independant of each other).
+        /// </summary>
+        /// <param name="xMinBound"></param>
+        /// <param name="xMaxBound"></param>
+        /// <param name="yMinBound"></param>
+        /// <param name="yMaxBound"></param>
+        /// <param name="zMinBound"></param>
+        /// <param name="zMaxBound"></param>
+        /// <returns></returns>
+        public T[,,] GetVolume(int xMinBound, int xMaxBound, int yMinBound, int yMaxBound, int zMinBound, int zMaxBound)
+        {
+            #region Bounds Checking
+            if (xMinBound < 0)
+                throw new ArgumentOutOfRangeException("xMinBound", "xMinBound can't be less than 0.");
+            if (yMinBound < 0)
+                throw new ArgumentOutOfRangeException("yMinBound", "yMinBound can't be less than 0.");
+            if (zMinBound < 0)
+                throw new ArgumentOutOfRangeException("zMinBound", "zMinBound can't be less than 0.");
+            if (xMaxBound < this.XDim)
+                throw new ArgumentOutOfRangeException("xMaxBound", "xMaxBound can't be more than this chunk's XDim.");
+            if (yMaxBound < this.YDim)
+                throw new ArgumentOutOfRangeException("yMaxBound", "yMaxBound can't be more than this chunk's YDim.");
+            if (zMaxBound < this.ZDim)
+                throw new ArgumentOutOfRangeException("zMaxBound", "zMaxBound can't be more than this chunk's ZDim.");
+            #endregion
+            T[, ,] result = new T[xMaxBound - xMinBound, yMaxBound - yMinBound, zMaxBound - zMinBound];
+
+            for (int x = xMinBound, i = 0; x < xMaxBound; x++, i++)
+            {
+                for (int y = yMinBound, j = 0; y < yMaxBound; y++, j++)
+                {
+                    for (int z = zMinBound, k = 0; z < zMaxBound; z++, k++)
+                    {
+                        result[i, j, k] = this.Blocks[x, y, z];
+                    }
+                }
+            }
+
+            return result;
+        }
+
         public T this[int x, int y, int z]
         {
             get
