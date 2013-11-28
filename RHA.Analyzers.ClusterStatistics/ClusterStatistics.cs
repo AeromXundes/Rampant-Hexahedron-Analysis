@@ -36,6 +36,10 @@ namespace ClusterStatistics
 {
     class ClusterStatistics : ParallelChunkAnalyzer<List<ClusterDataPoint>>
     {
+        public ClusterStatistics()
+        {
+            this.WorldFolderPath = @"C:\Users\Kevin\Cool Apps\Minecraft\MultiMC\instances\CS Project\minecraft\saves\Simple";
+        }
         public override RHA.Analyzers.AnalyzerInfo AnalyzerInfo
         {
             get {
@@ -44,9 +48,7 @@ namespace ClusterStatistics
                     "Cluster Statistics",
                     version,
                     "Aerom Xundes",
-                    "Provides a suite to analyze clusters of blocks. Intended for ore blocks, but can be used with any block id.",
-                    "RampantIntelligence.blogspot.com/rha",
-                    @"Part of a programming project for CS-1332 at Georgia Tech during the Fall 2013 Semester.
+                    @"Provides a suite to analyze clusters of blocks. Intended for ore blocks, but can be used with any block id.
 
 * Statistics across all clusters in a game world.
 	* Perfect for mod developers tuning a mod's ore generation, or server admins tweaking the configs for a bit extra ore for their players and wanting to not give too much extra.
@@ -58,29 +60,58 @@ Limitations of this analyzer:
 	Clusters are defined as a single continuous volume of blocks touching each other (horizonally, vertically, and diagonally).
 	Meaning this analyzer will not give reliable results with density based ore generation (such as a cloud of ore).
 	There is no way for this analyzer to determine when two clusters are generated together—it will assume it is one large cluster.
-		Although, the statistics will likely flag these larger clusters as outliers."
+		Although, the statistics will likely flag these larger clusters as outliers.
+",
+                    "RampantIntelligence.blogspot.com/rha",
+                    "Part of a programming project for CS-1332 at Georgia Tech during the Fall 2013 Semester."
                     );
             }
         }
 
+        protected AggregateClusterStats _results;
+
         protected override object GetResults()
         {
-            throw new NotImplementedException();
+            return this.Results();
         }
 
+        public new AggregateClusterStats Results()
+        {
+            return _results;
+        }
+
+        protected bool _resultsAvailable = false;
         public override bool ResultsAvailable
         {
-            get { throw new NotImplementedException(); }
+            get { return _resultsAvailable; }
         }
 
+        protected bool _resultsFinal = false;
         public override bool ResultsFinal
         {
-            get { throw new NotImplementedException(); }
+            get { return _resultsFinal; }
         }
 
         public override System.Windows.Forms.Form GetResultsForm()
         {
-            throw new NotImplementedException();
+            if (this.ResultsAvailable)
+                return new ClusterStatisticsResultsForm(_results);
+            else
+                return null;
+        }
+
+        protected ClusterStatisticsConfigOptions _options = new ClusterStatisticsConfigOptions();
+        public override System.Windows.Forms.Form GetConfigForm()
+        {
+            return new ClusterStatisticsConfigForm(_options);
+        }
+
+        public override bool HasSpecialConfig
+        {
+            get
+            {
+                return true;
+            }
         }
 
         /// <summary>
@@ -219,6 +250,9 @@ Limitations of this analyzer:
             {
                 clusters.AddRange(GetClusters(filteredChunk, this.XAbsMaxDist, this.YAbsMaxDist, this.ZAbsMaxDist));
             }
+
+            System.Threading.Interlocked.Increment(ref this.NumberOfChunksAnalyzed);
+
             return clusters;
         }
 
@@ -405,13 +439,100 @@ Limitations of this analyzer:
                     }
                 }
             }
-            
-            throw new NotImplementedException();
+
+            this._results = ClusterStats(orderedChunkClusters);
+            this._resultsAvailable = true;
+            this._resultsFinal = true;
         }
 
-        protected List<HashSet<Block_BasicInfo>> Ids;
-        protected int XAbsMaxDist;
-        protected int YAbsMaxDist;
-        protected int ZAbsMaxDist;
+        protected AggregateClusterStats ClusterStats(Dictionary<Tuple<int, int>, List<ClusterDataPoint>> clusterData)
+        {
+            AggregateClusterStats results = new AggregateClusterStats();
+
+            #region Add Clusters to results.Clusters
+            foreach (List<ClusterDataPoint> list_of_cdp in clusterData.Values)
+            {
+                foreach (ClusterDataPoint cdp in list_of_cdp)
+                {
+                    results.Clusters.Add(cdp);
+                }
+            }
+            #endregion
+
+            #region BlocksPerClusterAvg
+            int totalBlocksInClusters = 0;
+            foreach(ClusterDataPoint cdp in results.Clusters)
+            {
+                totalBlocksInClusters += cdp.Blocks.Count;
+            }
+
+            results.BlocksPerClusterAvg = totalBlocksInClusters / results.Clusters.Count;
+            #endregion
+            #region ChunkMap
+            Dictionary<Tuple<int,int>, bool> chunkMap = new Dictionary<Tuple<int,int>,bool>(clusterData.Keys.Count);
+            foreach(Tuple<int,int> t in clusterData.Keys)
+            {
+                chunkMap.Add(t, true);
+            }
+            results.ChunkMap = chunkMap;
+            #endregion
+            #region CentroidHeatMapChunkXYPlane
+            Dictionary<Tuple<int, int>, int> heatMap = new Dictionary<Tuple<int,int>,int>();
+            foreach (ClusterDataPoint cdp in results.Clusters)
+            {
+                Tuple<int, int> key = new Tuple<int,int>(cdp.CentroidBlock.XChunk.Value, cdp.CentroidBlock.YWorld.Value);
+                if (heatMap.ContainsKey(key))
+                    heatMap[key] += 1;
+                else
+                    heatMap.Add(key, 1);
+            }
+            results.CentroidHeatMapChunkXYPlane = heatMap;
+            #endregion
+            #region CentroidHeatMapChunkXZPlane
+            heatMap = new Dictionary<Tuple<int, int>, int>();
+            foreach (ClusterDataPoint cdp in results.Clusters)
+            {
+                Tuple<int, int> key = new Tuple<int, int>(cdp.CentroidBlock.XChunk.Value, cdp.CentroidBlock.ZChunk.Value);
+                if (heatMap.ContainsKey(key))
+                    heatMap[key] += 1;
+                else
+                    heatMap.Add(key, 1);
+            }
+            results.CentroidHeatMapChunkXZPlane = heatMap;
+            #endregion
+            #region CentroidHeatMapChunkYZPlane
+            heatMap = new Dictionary<Tuple<int, int>, int>();
+            foreach (ClusterDataPoint cdp in results.Clusters)
+            {
+                Tuple<int, int> key = new Tuple<int, int>(cdp.CentroidBlock.YWorld.Value, cdp.CentroidBlock.ZChunk.Value);
+                if (heatMap.ContainsKey(key))
+                    heatMap[key] += 1;
+                else
+                    heatMap.Add(key, 1);
+            }
+            results.CentroidHeatMapChunkYZPlane = heatMap;
+            #endregion
+            #region ClusterLengthAvg
+            int XLengthSum = 0;
+            int YLengthSum = 0;
+            int ZLengthSum = 0;
+            foreach (ClusterDataPoint cdp in results.Clusters)
+            {
+                XLengthSum += cdp.XLength;
+                YLengthSum += cdp.YLength;
+                ZLengthSum += cdp.ZLength;
+            }
+            results.ClusterXLengthAvg = XLengthSum / results.Clusters.Count;
+            results.ClusterYLengthAvg = YLengthSum / results.Clusters.Count;
+            results.ClusterZLengthAvg = ZLengthSum / results.Clusters.Count;
+            #endregion
+            results.Ids = this.Ids;
+            return results;
+        }
+
+        protected List<HashSet<Block_BasicInfo>> Ids { get { return _options.Ids; } }
+        protected int XAbsMaxDist { get { return _options.XAbsMaxDist; } }
+        protected int YAbsMaxDist { get { return _options.YAbsMaxDist; } }
+        protected int ZAbsMaxDist { get { return _options.ZAbsMaxDist; } }
     }
 }

@@ -30,9 +30,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ILNumerics">
+      <HintPath>..\packages\ILNumerics.3.3.2.0\lib\ILNumerics.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -40,12 +45,44 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="3D_Graphing.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="3D_Graphing.Designer.cs">
+      <DependentUpon>3D_Graphing.cs</DependentUpon>
+    </Compile>
     <Compile Include="AggregateClusterStats.cs" />
+    <Compile Include="Block3D.cs" />
     <Compile Include="ClusterDataPoint.cs" />
     <Compile Include="ClusterStatistics.cs" />
+    <Compile Include="ClusterStatisticsConfigForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ClusterStatisticsConfigForm.Designer.cs">
+      <DependentUpon>ClusterStatisticsConfigForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ClusterStatisticsConfigOptions.cs" />
+    <Compile Include="ClusterStatisticsResultsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ClusterStatisticsResultsForm.Designer.cs">
+      <DependentUpon>ClusterStatisticsResultsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="bin32\libiomp5md.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="bin32\mkl_custom.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="bin64\libiomp5md.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="bin64\mkl_custom.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="CS MC Project.txt" />
     <Content Include="Description.txt" />
     <Content Include="LICENSE.txt" />
@@ -55,6 +92,20 @@
       <Project>{b3dff3c2-5bdd-497e-a557-9cc29a2d4837}</Project>
       <Name>RHA.Analyzers</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="3D_Graphing.resx">
+      <DependentUpon>3D_Graphing.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ClusterStatisticsConfigForm.resx">
+      <DependentUpon>ClusterStatisticsConfigForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ClusterStatisticsResultsForm.resx">
+      <DependentUpon>ClusterStatisticsResultsForm.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

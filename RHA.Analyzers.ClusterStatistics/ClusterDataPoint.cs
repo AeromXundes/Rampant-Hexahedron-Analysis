@@ -41,6 +41,11 @@ namespace ClusterStatistics
     /// </remarks>
     public class ClusterDataPoint
     {
+        public ClusterDataPoint()
+        {
+            this.IdsWithinThisCluster = new HashSet<Block_BasicInfo>();
+            this.Blocks = new HashSet<Block_BasicInfo_Location>();
+        }
         /// <summary>
         /// All the Id:Data pairs this cluster has.
         /// </summary>
