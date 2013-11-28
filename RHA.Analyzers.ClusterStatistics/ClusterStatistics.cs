@@ -63,24 +63,50 @@ Limitations of this analyzer:
             }
         }
 
+        protected AggregateClusterStats _results;
+
         protected override object GetResults()
         {
-            throw new NotImplementedException();
+            return this.Results();
         }
 
+        public new AggregateClusterStats Results()
+        {
+            return _results;
+        }
+
+        protected bool _resultsAvailable = false;
         public override bool ResultsAvailable
         {
-            get { throw new NotImplementedException(); }
+            get { return _resultsAvailable; }
         }
 
+        protected bool _resultsFinal = false;
         public override bool ResultsFinal
         {
-            get { throw new NotImplementedException(); }
+            get { return _resultsFinal; }
         }
 
         public override System.Windows.Forms.Form GetResultsForm()
         {
-            throw new NotImplementedException();
+            if (this.ResultsAvailable)
+                return new _3D_Graphing(_results);
+            else
+                return null;
+        }
+
+        protected ClusterStatisticsConfigOptions _options;
+        public override System.Windows.Forms.Form GetConfigForm()
+        {
+            return new ClusterStatisticsConfigForm(_options);
+        }
+
+        public override bool HasSpecialConfig
+        {
+            get
+            {
+                return true;
+            }
         }
 
         /// <summary>
@@ -409,9 +435,9 @@ Limitations of this analyzer:
             throw new NotImplementedException();
         }
 
-        protected List<HashSet<Block_BasicInfo>> Ids;
-        protected int XAbsMaxDist;
-        protected int YAbsMaxDist;
-        protected int ZAbsMaxDist;
+        protected List<HashSet<Block_BasicInfo>> Ids { get { return _options.Ids; } }
+        protected int XAbsMaxDist { get { return _options.XAbsMaxDist; } }
+        protected int YAbsMaxDist { get { return _options.YAbsMaxDist; } }
+        protected int ZAbsMaxDist { get { return _options.ZAbsMaxDist; } }
     }
 }

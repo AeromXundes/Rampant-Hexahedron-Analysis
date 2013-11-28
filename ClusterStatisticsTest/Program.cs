@@ -16,7 +16,7 @@ namespace ClusterStatisticsTest
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new ClusterStatistics._3D_Graphing());
+            //Application.Run(new ClusterStatistics._3D_Graphing());
         }
     }
 }

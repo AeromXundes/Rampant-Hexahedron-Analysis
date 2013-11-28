@@ -15,66 +15,27 @@ namespace ClusterStatistics
 {
     public partial class _3D_Graphing : Form
     {
-        public _3D_Graphing()
+        public _3D_Graphing(AggregateClusterStats ResultsData)
         {
             InitializeComponent();
+            this.ResultsData = ResultsData;
         }
+
+        private AggregateClusterStats ResultsData;
 
         private void ilPanel1_Load(object sender, EventArgs e)
         {
             var scene = new ILScene();
-            var sphere = scene.Camera.Add(
-                    new ILSphere
-                    {
-                        Wireframe = { Color = Color.Black },
-                        Fill = { Color = Color.FromArgb(150, Color.Yellow) }
-                    });
-
-            // add a triangle shape
-            var tri = sphere.Add(Shapes.Triangle);
-            // configure its positions (vertices)
-            tri.Positions.Update(new float[,] {
-              {0,0,0}, // first vertex
-              {1,0,0}, // second vertex
-              {1,1,0}, // third vertex
-            });
-            // make the triangle red
-            tri.Color = Color.Red;
-            // turns lighting off for the triangle
-            tri.AutoNormals = false;
-
-            // reuse the triangles shape: 
-            // add a new group to the sphere
-            var group = sphere.Add(
-                // the group gets a transform configured
-              new ILGroup(rotateAxis: new Vector3(0, 1, 0),
-                          angle: Math.PI));
-            // add the old triangle to the group
-            var tri2 = group.Add(tri);
-            // give the new triangle a green color
-            tri2.Color = Color.Green;
-
-            var cube = Shapes.UnitCubeWireframe;
-            var x = scene.Camera.Add(cube);
-            cube.Positions.Update(new float[,] { { 1, 2, 1 }, {1,2,1} });
-
-            // even more reusing 
-            using (ILScope.Enter())
-            {
-                // make 50 random positions: range ([-10..10],[-10..10],[0..-20])
-                ILArray<float> positions = ILMath.tosingle(ILMath.rand(3, 50));
-                positions = positions * ILMath.array<float>(20f, 20f, -20f)
-                                      + ILMath.array<float>(-10f, -10f, 0f);
-                // create 50 clones, each at a random position
-                for (int i = 0; i < positions.S[1]; i++)
-                {
-                    var clone = scene.Camera.Add(sphere);
-                    clone.Transform = Matrix4.Translation(
-                            positions.GetValue(0, i),
-                            positions.GetValue(1, i),
-                            positions.GetValue(2, i));
-                }
-            }
+            
+            Block3D block = new Block3D(-1, -1, -1, Color.Red,.5f);
+            Block3D block2 = new Block3D(0, 0, 0, Color.Blue, .5f);
+            Block3D block3 = new Block3D(-1, 0, 0, Color.Yellow, .5f);
+            Block3D block4 = new Block3D(-1, -1, 0, Color.Violet, .5f);
+            scene.Camera.Add(block);
+            scene.Camera.Add(block2);
+            scene.Camera.Add(block3);
+            scene.Camera.Add(block4);
+            
             ilPanel1.Scene = scene; 
         }
     }

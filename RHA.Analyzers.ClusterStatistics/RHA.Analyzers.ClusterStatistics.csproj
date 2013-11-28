@@ -52,8 +52,16 @@
       <DependentUpon>3D_Graphing.cs</DependentUpon>
     </Compile>
     <Compile Include="AggregateClusterStats.cs" />
+    <Compile Include="Block3D.cs" />
     <Compile Include="ClusterDataPoint.cs" />
     <Compile Include="ClusterStatistics.cs" />
+    <Compile Include="ClusterStatisticsConfigForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ClusterStatisticsConfigForm.Designer.cs">
+      <DependentUpon>ClusterStatisticsConfigForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ClusterStatisticsConfigOptions.cs" />
     <Compile Include="ClusterStatisticsResultsForm.cs">
       <SubType>Form</SubType>
     </Compile>
