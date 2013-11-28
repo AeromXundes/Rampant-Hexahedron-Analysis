@@ -30,7 +30,7 @@ namespace ClusterStatistics
                 {
                     txt += ((block.Id.HasValue) ? block.Id.ToString() : string.Empty) + ":" + ((block.Data.HasValue) ? block.Data.Value.ToString() : String.Empty);
                 }
-                txt += ";";
+                txt += ",";
             }
             this.textBox_Ids.Text = txt;
 
@@ -61,6 +61,9 @@ namespace ClusterStatistics
 
         private void RenderCluster(ClusterDataPoint cluster)
         {
+            this.label_CentroidLoc.Text = cluster.CentroidBlock.ToString();
+            this.label_NumBlocks.Text = cluster.Blocks.Count.ToString();
+
             var scene = new ILScene();
 
             foreach (var MCBlock in cluster.Blocks)
@@ -68,10 +71,45 @@ namespace ClusterStatistics
                 Block3D ILBlock = new Block3D((double)MCBlock.XWorld, (double)MCBlock.YWorld, (double)MCBlock.ZWorld, Color.Blue);
                 scene.Camera.Add(ILBlock);
             }
-            scene.Camera.Add(new Block3D(0, 0, 0, Color.Red));
-            //scene.Camera.LookAt = new Vector3((float)cluster.CentroidBlock.XWorld, (float)cluster.CentroidBlock.YWorld, (float)cluster.CentroidBlock.ZWorld);
+            //scene.Camera.Add(new Block3D(0, 0, 0, Color.Red));
+            scene.Camera.LookAt = new Vector3((float)cluster.CentroidBlock.XWorld + .5f, (float)cluster.CentroidBlock.YWorld + .5f, (float)cluster.CentroidBlock.ZWorld + .5f);
             this.ilPanel_clusterVisual.Scene = scene;
-            this.ilPanel_clusterVisual.Update();
+            this.ilPanel_clusterVisual.Scene.Configure();
+            this.ilPanel_clusterVisual.Refresh();
+        }
+
+        private void RenderClusterHeatMap(List<ClusterDataPoint> clusters)
+        {
+            var scene = new ILScene();
+
+            Dictionary<Tuple<int, int, int>, int> heatMap = new Dictionary<Tuple<int, int, int>, int>();
+
+            foreach (var cluster in clusters)
+            {
+                Tuple<int, int, int> key = new Tuple<int, int, int>(cluster.CentroidBlock.XChunk.Value, cluster.CentroidBlock.YWorld.Value, cluster.CentroidBlock.ZChunk.Value);
+                if (heatMap.ContainsKey(key))
+                    heatMap[key] += 1;
+                else
+                    heatMap.Add(key, 1);
+            }
+
+            int max = heatMap.Values.Max();
+            int min = heatMap.Values.Min();
+
+            foreach (var kvp in heatMap)
+            {
+                Block3D ILBlock = new Block3D((double)kvp.Key.Item1, (double)kvp.Key.Item2, (double)kvp.Key.Item3, Color.Red, kvp.Value / (float)max);
+                scene.Camera.Add(ILBlock);
+            }
+            scene.Camera.LookAt = new Vector3(8, 64, 8);
+            this.ilPanel_ClusterHeatMap.Scene = scene;
+            this.ilPanel_ClusterHeatMap.Scene.Configure();
+            this.ilPanel_ClusterHeatMap.Refresh();
+        }
+
+        private void ilPanel_ClusterHeatMap_Load(object sender, EventArgs e)
+        {
+            RenderClusterHeatMap(Stats.Clusters);
         }
     }
 

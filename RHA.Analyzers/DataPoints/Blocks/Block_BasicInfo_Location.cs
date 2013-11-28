@@ -98,19 +98,31 @@ namespace RHA.Analyzers.DataPoints.Blocks
         /// <summary>
         /// This block's coordinate within a chunk.
         /// </summary>
-        public int? XChunk { get { return XWorld % 16; } }
+        public int? XChunk { get { return (XWorld.HasValue) ? (int?)Math.Abs(XWorld.Value % 16) + ((XWorld < 0) ? 15 : 0) : null; } }
         /// <summary>
         /// This block's coordinate within a chunk.
         /// </summary>
-        public int? ZChunk { get { return ZWorld % 16; } }
+        public int? ZChunk { get { return (ZWorld.HasValue) ? (int?)Math.Abs(ZWorld.Value % 16) + ((ZWorld < 0) ? 15 : 0) : null; } }
         /// <summary>
         /// The chunk coordinate this block is in.
         /// </summary>
-        public int? ChunkX { get { return XWorld / 16; } }
+        public int? ChunkX 
+        { 
+            get 
+            { 
+                return (XWorld.HasValue) ? (int?)Math.Floor(XWorld.Value / 16.0) : null;
+            }
+        }
         /// <summary>
         /// The chunk coordinate this block is in.
         /// </summary>
-        public int? ChunkZ { get { return ZWorld / 16; } }
+        public int? ChunkZ 
+        { 
+            get 
+            { 
+                return (ZWorld.HasValue) ? (int?)Math.Floor(ZWorld.Value / 16.0) : null; 
+            } 
+        }
         #endregion
 
         #region Distance Functions

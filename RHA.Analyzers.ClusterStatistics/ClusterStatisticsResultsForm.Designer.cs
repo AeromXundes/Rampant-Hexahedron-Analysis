@@ -51,18 +51,28 @@
             this.label1 = new System.Windows.Forms.Label();
             this.textBox_Ids = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.label_NumBlocks = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label_CentroidLoc = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.ilPanel_clusterVisual = new ILNumerics.Drawing.ILPanel();
             this.listBox_clusters = new System.Windows.Forms.ListBox();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.ilPanel_ClusterHeatMap = new ILNumerics.Drawing.ILPanel();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.panel1.SuspendLayout();
+            this.tabPage3.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
@@ -167,9 +177,9 @@
             this.label_BlocksPerChunk.AutoSize = true;
             this.label_BlocksPerChunk.Location = new System.Drawing.Point(94, 121);
             this.label_BlocksPerChunk.Name = "label_BlocksPerChunk";
-            this.label_BlocksPerChunk.Size = new System.Drawing.Size(41, 13);
+            this.label_BlocksPerChunk.Size = new System.Drawing.Size(114, 13);
             this.label_BlocksPerChunk.TabIndex = 11;
-            this.label_BlocksPerChunk.Text = "label11";
+            this.label_BlocksPerChunk.Text = "label_BlocksPerChunk";
             // 
             // label10
             // 
@@ -185,9 +195,9 @@
             this.label_ClustersPerChunk.AutoSize = true;
             this.label_ClustersPerChunk.Location = new System.Drawing.Point(94, 98);
             this.label_ClustersPerChunk.Name = "label_ClustersPerChunk";
-            this.label_ClustersPerChunk.Size = new System.Drawing.Size(35, 13);
+            this.label_ClustersPerChunk.Size = new System.Drawing.Size(119, 13);
             this.label_ClustersPerChunk.TabIndex = 9;
-            this.label_ClustersPerChunk.Text = "label9";
+            this.label_ClustersPerChunk.Text = "label_ClustersPerChunk";
             // 
             // label8
             // 
@@ -203,9 +213,9 @@
             this.label_BlocksPercluster.AutoSize = true;
             this.label_BlocksPercluster.Location = new System.Drawing.Point(94, 75);
             this.label_BlocksPercluster.Name = "label_BlocksPercluster";
-            this.label_BlocksPercluster.Size = new System.Drawing.Size(35, 13);
+            this.label_BlocksPercluster.Size = new System.Drawing.Size(115, 13);
             this.label_BlocksPercluster.TabIndex = 7;
-            this.label_BlocksPercluster.Text = "label7";
+            this.label_BlocksPercluster.Text = "label_BlocksPerCluster";
             // 
             // label6
             // 
@@ -270,6 +280,7 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.panel1);
             this.tabPage2.Controls.Add(this.ilPanel_clusterVisual);
             this.tabPage2.Controls.Add(this.listBox_clusters);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
@@ -279,6 +290,55 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Cluster Visualization";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // panel1
+            // 
+            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.label_NumBlocks);
+            this.panel1.Controls.Add(this.label5);
+            this.panel1.Controls.Add(this.label_CentroidLoc);
+            this.panel1.Controls.Add(this.label3);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel1.Location = new System.Drawing.Point(123, 3);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(379, 49);
+            this.panel1.TabIndex = 2;
+            // 
+            // label_NumBlocks
+            // 
+            this.label_NumBlocks.AutoSize = true;
+            this.label_NumBlocks.Location = new System.Drawing.Point(97, 28);
+            this.label_NumBlocks.Name = "label_NumBlocks";
+            this.label_NumBlocks.Size = new System.Drawing.Size(89, 13);
+            this.label_NumBlocks.TabIndex = 3;
+            this.label_NumBlocks.Text = "label_NumBlocks";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 28);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(52, 13);
+            this.label5.TabIndex = 2;
+            this.label5.Text = "# Blocks:";
+            // 
+            // label_CentroidLoc
+            // 
+            this.label_CentroidLoc.AutoSize = true;
+            this.label_CentroidLoc.Location = new System.Drawing.Point(97, 10);
+            this.label_CentroidLoc.Name = "label_CentroidLoc";
+            this.label_CentroidLoc.Size = new System.Drawing.Size(92, 13);
+            this.label_CentroidLoc.TabIndex = 1;
+            this.label_CentroidLoc.Text = "label_CentroidLoc";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 10);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(85, 13);
+            this.label3.TabIndex = 0;
+            this.label3.Text = "Centroid (X,Y,Z):";
             // 
             // ilPanel_clusterVisual
             // 
@@ -304,6 +364,31 @@
             this.listBox_clusters.TabIndex = 0;
             this.listBox_clusters.SelectedIndexChanged += new System.EventHandler(this.listBox_clusters_SelectedIndexChanged);
             // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.ilPanel_ClusterHeatMap);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(505, 382);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "Heat Map";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // ilPanel_ClusterHeatMap
+            // 
+            this.ilPanel_ClusterHeatMap.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ilPanel_ClusterHeatMap.Driver = ILNumerics.Drawing.RendererTypes.OpenGL;
+            this.ilPanel_ClusterHeatMap.Editor = null;
+            this.ilPanel_ClusterHeatMap.Location = new System.Drawing.Point(3, 3);
+            this.ilPanel_ClusterHeatMap.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ilPanel_ClusterHeatMap.Name = "ilPanel_ClusterHeatMap";
+            this.ilPanel_ClusterHeatMap.Rectangle = ((System.Drawing.RectangleF)(resources.GetObject("ilPanel_ClusterHeatMap.Rectangle")));
+            this.ilPanel_ClusterHeatMap.ShowUIControls = false;
+            this.ilPanel_ClusterHeatMap.Size = new System.Drawing.Size(499, 376);
+            this.ilPanel_ClusterHeatMap.TabIndex = 0;
+            this.ilPanel_ClusterHeatMap.Load += new System.EventHandler(this.ilPanel_ClusterHeatMap_Load);
+            // 
             // ClusterStatisticsResultsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -318,6 +403,9 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
+            this.tabPage3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -348,5 +436,12 @@
         private System.Windows.Forms.TextBox textBox_Ids;
         private ILNumerics.Drawing.ILPanel ilPanel_clusterVisual;
         private System.Windows.Forms.ListBox listBox_clusters;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Label label_NumBlocks;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label_CentroidLoc;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TabPage tabPage3;
+        private ILNumerics.Drawing.ILPanel ilPanel_ClusterHeatMap;
     }
 }

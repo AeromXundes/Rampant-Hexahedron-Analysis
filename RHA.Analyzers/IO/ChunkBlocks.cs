@@ -184,8 +184,14 @@ namespace RHA.Analyzers.IO
             return data;
         }
 
+        private int Distance(int x, int y)
+        {
+            int result = x - y;
+            return result;
+        }
+        
         /// <summary>
-        /// Get a volume bounded by x, y, and z (each independant of each other).
+        /// Get a volume bounded by x, y, and z (each independant of each other) inclusive.
         /// </summary>
         /// <param name="xMinBound"></param>
         /// <param name="xMaxBound"></param>
@@ -204,20 +210,20 @@ namespace RHA.Analyzers.IO
                 throw new ArgumentOutOfRangeException("yMinBound", "yMinBound can't be less than 0.");
             if (zMinBound < 0)
                 throw new ArgumentOutOfRangeException("zMinBound", "zMinBound can't be less than 0.");
-            if (xMaxBound < this.XDim)
+            if (xMaxBound > this.XDim)
                 throw new ArgumentOutOfRangeException("xMaxBound", "xMaxBound can't be more than this chunk's XDim.");
-            if (yMaxBound < this.YDim)
+            if (yMaxBound > this.YDim)
                 throw new ArgumentOutOfRangeException("yMaxBound", "yMaxBound can't be more than this chunk's YDim.");
-            if (zMaxBound < this.ZDim)
+            if (zMaxBound > this.ZDim)
                 throw new ArgumentOutOfRangeException("zMaxBound", "zMaxBound can't be more than this chunk's ZDim.");
             #endregion
-            T[, ,] result = new T[xMaxBound - xMinBound, yMaxBound - yMinBound, zMaxBound - zMinBound];
+            T[, ,] result = new T[Distance(xMaxBound, xMinBound) + 1, Distance(yMaxBound, yMinBound) + 1, Distance(zMaxBound, zMinBound) + 1];
 
-            for (int x = xMinBound, i = 0; x < xMaxBound; x++, i++)
+            for (int x = xMinBound, i = 0; x <= xMaxBound; x++, i++)
             {
-                for (int y = yMinBound, j = 0; y < yMaxBound; y++, j++)
+                for (int y = yMinBound, j = 0; y <= yMaxBound; y++, j++)
                 {
-                    for (int z = zMinBound, k = 0; z < zMaxBound; z++, k++)
+                    for (int z = zMinBound, k = 0; z <= zMaxBound; z++, k++)
                     {
                         result[i, j, k] = this.Blocks[x, y, z];
                     }

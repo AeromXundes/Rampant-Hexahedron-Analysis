@@ -114,6 +114,25 @@ Limitations of this analyzer:
             }
         }
 
+        public override void Reset()
+        {
+            this._options = new ClusterStatisticsConfigOptions();
+            this._results = new AggregateClusterStats();
+            this._resultsAvailable = false;
+            this._resultsFinal = false;
+            base.Reset();
+        }
+
+        public override void Start()
+        {
+            if (Ids.Count == 0)
+            {
+                this.FinishError("No Ids given. Check the Special Config.");
+                return;
+            }
+            base.Start();
+        }
+
         /// <summary>
         /// Filters a chunk based on an IdFilter. The Id:Data pairs are both compared, not just the Id.
         /// </summary>
@@ -155,18 +174,20 @@ Limitations of this analyzer:
         protected List<Block_BasicInfo_Location> GetNeighbors(ChunkBlocks<Block_BasicInfo_Location> FilteredChunk, Block_BasicInfo_Location OriginBlock, int xDistMax, int yDistMax, int zDistMax)
         {
             List<Block_BasicInfo_Location> neighbors = new List<Block_BasicInfo_Location>(xDistMax * yDistMax * zDistMax);
-            for (int x = Math.Max(OriginBlock.XChunk.Value - xDistMax, 0); x < Math.Min(xDistMax, FilteredChunk.XDim); x++)
+
+            Block_BasicInfo_Location[, ,] possibleNeighbors = FilteredChunk.GetVolume(
+                Math.Max(0, OriginBlock.XChunk.Value - xDistMax), Math.Min(FilteredChunk.XDim - 1, OriginBlock.XChunk.Value + xDistMax),
+                Math.Max(0, OriginBlock.YWorld.Value - yDistMax), Math.Min(FilteredChunk.YDim - 1, OriginBlock.YWorld.Value + yDistMax),
+                Math.Max(0, OriginBlock.ZChunk.Value - zDistMax), Math.Min(FilteredChunk.ZDim - 1, OriginBlock.ZChunk.Value + zDistMax)
+                );
+
+            foreach (Block_BasicInfo_Location block in possibleNeighbors)
             {
-                for (int z = Math.Max(OriginBlock.ZChunk.Value - zDistMax, 0); z < Math.Min(zDistMax, FilteredChunk.XDim); z++)
-                {
-                    for (int y = Math.Max(OriginBlock.YWorld.Value - yDistMax, 0); y < Math.Min(yDistMax, FilteredChunk.XDim); y++)
-                    {
-                        if(FilteredChunk[x,y,z] != null)
-                            if(!FilteredChunk[x,y,z].Equals(OriginBlock)) // .Equals to compare across the coordinates.
-                                neighbors.Add(FilteredChunk[x, y, z]);
-                    }
-                }
+                if(block != null)
+                    if(!block.Equals(OriginBlock))
+                        neighbors.Add(block);
             }
+            
             return neighbors;
         }
 
@@ -359,7 +380,8 @@ Limitations of this analyzer:
                 if(chunkOfClusters.Count == 0)
                     continue;   // Nothing we can do about chunks with no clusters in them.
                 // Get the chunk coordinates of the cluster and add the chunk of clusters to that coordinate pair.
-                orderedChunkClusters.Add(new Tuple<int, int>(chunkOfClusters.First().Blocks.First().ChunkX.Value, chunkOfClusters.First().Blocks.First().ChunkZ.Value), chunkOfClusters);
+                Tuple<int,int> key = new Tuple<int, int>(chunkOfClusters.First().Blocks.First().ChunkX.Value, chunkOfClusters.First().Blocks.First().ChunkZ.Value);
+                orderedChunkClusters.Add(key, chunkOfClusters);
             }
 
             int minX = orderedChunkClusters.Keys.Min(tuple => tuple.Item1);

@@ -27,7 +27,7 @@ namespace ClusterStatistics
                 {
                     txt += ((block.Id.HasValue) ? block.Id.ToString() : string.Empty) + ":" + ((block.Data.HasValue) ? block.Data.Value.ToString() : String.Empty);
                 }
-                txt += ";";
+                txt += ",";
             }
             this.textBox_Ids.Text = txt;
         }
