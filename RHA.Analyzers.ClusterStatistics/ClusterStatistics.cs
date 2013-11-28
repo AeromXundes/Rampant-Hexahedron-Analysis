@@ -36,6 +36,10 @@ namespace ClusterStatistics
 {
     class ClusterStatistics : ParallelChunkAnalyzer<List<ClusterDataPoint>>
     {
+        public ClusterStatistics()
+        {
+            this.WorldFolderPath = @"C:\Users\Kevin\Cool Apps\Minecraft\MultiMC\instances\CS Project\minecraft\saves\Simple";
+        }
         public override RHA.Analyzers.AnalyzerInfo AnalyzerInfo
         {
             get {
@@ -44,9 +48,7 @@ namespace ClusterStatistics
                     "Cluster Statistics",
                     version,
                     "Aerom Xundes",
-                    "Provides a suite to analyze clusters of blocks. Intended for ore blocks, but can be used with any block id.",
-                    "RampantIntelligence.blogspot.com/rha",
-                    @"Part of a programming project for CS-1332 at Georgia Tech during the Fall 2013 Semester.
+                    @"Provides a suite to analyze clusters of blocks. Intended for ore blocks, but can be used with any block id.
 
 * Statistics across all clusters in a game world.
 	* Perfect for mod developers tuning a mod's ore generation, or server admins tweaking the configs for a bit extra ore for their players and wanting to not give too much extra.
@@ -58,7 +60,10 @@ Limitations of this analyzer:
 	Clusters are defined as a single continuous volume of blocks touching each other (horizonally, vertically, and diagonally).
 	Meaning this analyzer will not give reliable results with density based ore generation (such as a cloud of ore).
 	There is no way for this analyzer to determine when two clusters are generated together—it will assume it is one large cluster.
-		Although, the statistics will likely flag these larger clusters as outliers."
+		Although, the statistics will likely flag these larger clusters as outliers.
+",
+                    "RampantIntelligence.blogspot.com/rha",
+                    "Part of a programming project for CS-1332 at Georgia Tech during the Fall 2013 Semester."
                     );
             }
         }
@@ -90,7 +95,7 @@ Limitations of this analyzer:
         public override System.Windows.Forms.Form GetResultsForm()
         {
             if (this.ResultsAvailable)
-                return new _3D_Graphing(_results);
+                return new ClusterStatisticsResultsForm(_results);
             else
                 return null;
         }
@@ -245,6 +250,9 @@ Limitations of this analyzer:
             {
                 clusters.AddRange(GetClusters(filteredChunk, this.XAbsMaxDist, this.YAbsMaxDist, this.ZAbsMaxDist));
             }
+
+            System.Threading.Interlocked.Increment(ref this.NumberOfChunksAnalyzed);
+
             return clusters;
         }
 
@@ -472,7 +480,11 @@ Limitations of this analyzer:
             Dictionary<Tuple<int, int>, int> heatMap = new Dictionary<Tuple<int,int>,int>();
             foreach (ClusterDataPoint cdp in results.Clusters)
             {
-                heatMap[new Tuple<int,int>(cdp.CentroidBlock.XChunk.Value, cdp.CentroidBlock.YWorld.Value)] += 1;
+                Tuple<int, int> key = new Tuple<int,int>(cdp.CentroidBlock.XChunk.Value, cdp.CentroidBlock.YWorld.Value);
+                if (heatMap.ContainsKey(key))
+                    heatMap[key] += 1;
+                else
+                    heatMap.Add(key, 1);
             }
             results.CentroidHeatMapChunkXYPlane = heatMap;
             #endregion
@@ -480,7 +492,11 @@ Limitations of this analyzer:
             heatMap = new Dictionary<Tuple<int, int>, int>();
             foreach (ClusterDataPoint cdp in results.Clusters)
             {
-                heatMap[new Tuple<int, int>(cdp.CentroidBlock.XChunk.Value, cdp.CentroidBlock.ZChunk.Value)] += 1;
+                Tuple<int, int> key = new Tuple<int, int>(cdp.CentroidBlock.XChunk.Value, cdp.CentroidBlock.ZChunk.Value);
+                if (heatMap.ContainsKey(key))
+                    heatMap[key] += 1;
+                else
+                    heatMap.Add(key, 1);
             }
             results.CentroidHeatMapChunkXZPlane = heatMap;
             #endregion
@@ -488,7 +504,11 @@ Limitations of this analyzer:
             heatMap = new Dictionary<Tuple<int, int>, int>();
             foreach (ClusterDataPoint cdp in results.Clusters)
             {
-                heatMap[new Tuple<int, int>(cdp.CentroidBlock.YWorld.Value, cdp.CentroidBlock.ZChunk.Value)] += 1;
+                Tuple<int, int> key = new Tuple<int, int>(cdp.CentroidBlock.YWorld.Value, cdp.CentroidBlock.ZChunk.Value);
+                if (heatMap.ContainsKey(key))
+                    heatMap[key] += 1;
+                else
+                    heatMap.Add(key, 1);
             }
             results.CentroidHeatMapChunkYZPlane = heatMap;
             #endregion
@@ -506,7 +526,7 @@ Limitations of this analyzer:
             results.ClusterYLengthAvg = YLengthSum / results.Clusters.Count;
             results.ClusterZLengthAvg = ZLengthSum / results.Clusters.Count;
             #endregion
-
+            results.Ids = this.Ids;
             return results;
         }
 

@@ -10,6 +10,10 @@ namespace ClusterStatistics
 {
     public class AggregateClusterStats
     {
+        public AggregateClusterStats()
+        {
+            Clusters = new List<ClusterDataPoint>();
+        }
         public double BlocksPerClusterAvg;
         public double ClustersPerChunkAvg;
         public double BlocksPerChunkAvg;
@@ -23,5 +27,6 @@ namespace ClusterStatistics
         public List<ClusterDataPoint> Clusters;
         public Dictionary<Tuple<int, int>, bool> ChunkMap;
         public Dictionary<Tuple<int, int>, Biome> BiomeMap;
+        public List<HashSet<RHA.Analyzers.DataPoints.Blocks.Block_BasicInfo>> Ids;
     }
 }

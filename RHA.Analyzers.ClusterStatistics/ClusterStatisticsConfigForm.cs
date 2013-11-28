@@ -29,7 +29,7 @@ namespace ClusterStatistics
                 }
                 txt += ";";
             }
-            //this.textBox_Ids.Text 
+            this.textBox_Ids.Text = txt;
         }
 
         private ClusterStatisticsConfigOptions Options;
