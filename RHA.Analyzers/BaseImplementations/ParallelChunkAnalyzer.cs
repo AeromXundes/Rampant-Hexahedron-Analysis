@@ -122,6 +122,8 @@ namespace RHA.Analyzers.BaseImplementations
         {
             if (this.Status == AnalyzerState.Running)
                 throw new InvalidOperationException("Analyzer already running.");
+            if (this.Status == AnalyzerState.RanToCompletion)
+                this.Reset();
             this.Status = AnalyzerState.Running;
             Task.Run(() => Main());
         }
