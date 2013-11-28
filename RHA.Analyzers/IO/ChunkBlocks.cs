@@ -194,6 +194,7 @@ namespace RHA.Analyzers.IO
         /// <param name="zMinBound"></param>
         /// <param name="zMaxBound"></param>
         /// <returns></returns>
+        /// <exception cref="ArgumentOutOfBounds">Thrown when the min bounds are less than 0, or max bounds are more than the chunk dimensions.</exception>
         public T[,,] GetVolume(int xMinBound, int xMaxBound, int yMinBound, int yMaxBound, int zMinBound, int zMaxBound)
         {
             #region Bounds Checking
