@@ -10,18 +10,18 @@ namespace ClusterStatistics
 {
     public class AggregateClusterStats
     {
-        double BlocksPerClusterAvg;
-        double ClustersPerChunkAvg;
-        double BlocksPerChunkAvg;
-        List<int> CentroidHeatMapChunkXZPlane;
-        List<int> CentroidHeatMapChunkXYPlane;
-        List<int> CentroidHeatMapChunkYZPlane;
-        double ClusterYLengthAvg;
-        double ClusterXLengthAvg;
-        double ClusterZLengthAvg;
+        public double BlocksPerClusterAvg;
+        public double ClustersPerChunkAvg;
+        public double BlocksPerChunkAvg;
+        public Dictionary<Tuple<int, int>, int> CentroidHeatMapChunkXZPlane;
+        public Dictionary<Tuple<int, int>, int> CentroidHeatMapChunkXYPlane;
+        public Dictionary<Tuple<int, int>, int> CentroidHeatMapChunkYZPlane;
+        public double ClusterYLengthAvg;
+        public double ClusterXLengthAvg;
+        public double ClusterZLengthAvg;
 
-        List<ClusterDataPoint> Clusters;
-        Dictionary<Tuple<int, int>, bool> ChunkMap;
-        Dictionary<Tuple<int, int>, Biome> BiomeMap;
+        public List<ClusterDataPoint> Clusters;
+        public Dictionary<Tuple<int, int>, bool> ChunkMap;
+        public Dictionary<Tuple<int, int>, Biome> BiomeMap;
     }
 }

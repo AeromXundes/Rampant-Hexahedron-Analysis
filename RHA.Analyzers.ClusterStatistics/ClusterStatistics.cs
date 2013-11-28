@@ -95,7 +95,7 @@ Limitations of this analyzer:
                 return null;
         }
 
-        protected ClusterStatisticsConfigOptions _options;
+        protected ClusterStatisticsConfigOptions _options = new ClusterStatisticsConfigOptions();
         public override System.Windows.Forms.Form GetConfigForm()
         {
             return new ClusterStatisticsConfigForm(_options);
@@ -431,8 +431,83 @@ Limitations of this analyzer:
                     }
                 }
             }
-            
-            throw new NotImplementedException();
+
+            this._results = ClusterStats(orderedChunkClusters);
+            this._resultsAvailable = true;
+            this._resultsFinal = true;
+        }
+
+        protected AggregateClusterStats ClusterStats(Dictionary<Tuple<int, int>, List<ClusterDataPoint>> clusterData)
+        {
+            AggregateClusterStats results = new AggregateClusterStats();
+
+            #region Add Clusters to results.Clusters
+            foreach (List<ClusterDataPoint> list_of_cdp in clusterData.Values)
+            {
+                foreach (ClusterDataPoint cdp in list_of_cdp)
+                {
+                    results.Clusters.Add(cdp);
+                }
+            }
+            #endregion
+
+            #region BlocksPerClusterAvg
+            int totalBlocksInClusters = 0;
+            foreach(ClusterDataPoint cdp in results.Clusters)
+            {
+                totalBlocksInClusters += cdp.Blocks.Count;
+            }
+
+            results.BlocksPerClusterAvg = totalBlocksInClusters / results.Clusters.Count;
+            #endregion
+            #region ChunkMap
+            Dictionary<Tuple<int,int>, bool> chunkMap = new Dictionary<Tuple<int,int>,bool>(clusterData.Keys.Count);
+            foreach(Tuple<int,int> t in clusterData.Keys)
+            {
+                chunkMap.Add(t, true);
+            }
+            results.ChunkMap = chunkMap;
+            #endregion
+            #region CentroidHeatMapChunkXYPlane
+            Dictionary<Tuple<int, int>, int> heatMap = new Dictionary<Tuple<int,int>,int>();
+            foreach (ClusterDataPoint cdp in results.Clusters)
+            {
+                heatMap[new Tuple<int,int>(cdp.CentroidBlock.XChunk.Value, cdp.CentroidBlock.YWorld.Value)] += 1;
+            }
+            results.CentroidHeatMapChunkXYPlane = heatMap;
+            #endregion
+            #region CentroidHeatMapChunkXZPlane
+            heatMap = new Dictionary<Tuple<int, int>, int>();
+            foreach (ClusterDataPoint cdp in results.Clusters)
+            {
+                heatMap[new Tuple<int, int>(cdp.CentroidBlock.XChunk.Value, cdp.CentroidBlock.ZChunk.Value)] += 1;
+            }
+            results.CentroidHeatMapChunkXZPlane = heatMap;
+            #endregion
+            #region CentroidHeatMapChunkYZPlane
+            heatMap = new Dictionary<Tuple<int, int>, int>();
+            foreach (ClusterDataPoint cdp in results.Clusters)
+            {
+                heatMap[new Tuple<int, int>(cdp.CentroidBlock.YWorld.Value, cdp.CentroidBlock.ZChunk.Value)] += 1;
+            }
+            results.CentroidHeatMapChunkYZPlane = heatMap;
+            #endregion
+            #region ClusterLengthAvg
+            int XLengthSum = 0;
+            int YLengthSum = 0;
+            int ZLengthSum = 0;
+            foreach (ClusterDataPoint cdp in results.Clusters)
+            {
+                XLengthSum += cdp.XLength;
+                YLengthSum += cdp.YLength;
+                ZLengthSum += cdp.ZLength;
+            }
+            results.ClusterXLengthAvg = XLengthSum / results.Clusters.Count;
+            results.ClusterYLengthAvg = YLengthSum / results.Clusters.Count;
+            results.ClusterZLengthAvg = ZLengthSum / results.Clusters.Count;
+            #endregion
+
+            return results;
         }
 
         protected List<HashSet<Block_BasicInfo>> Ids { get { return _options.Ids; } }

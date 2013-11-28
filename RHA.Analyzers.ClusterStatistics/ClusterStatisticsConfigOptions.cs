@@ -9,9 +9,9 @@ namespace ClusterStatistics
 {
     public class ClusterStatisticsConfigOptions
     {
-        public List<HashSet<Block_BasicInfo>> Ids;
-        public int XAbsMaxDist;
-        public int YAbsMaxDist;
-        public int ZAbsMaxDist;
+        public List<HashSet<Block_BasicInfo>> Ids = new List<HashSet<Block_BasicInfo>>();
+        public int XAbsMaxDist = 1;
+        public int YAbsMaxDist = 1;
+        public int ZAbsMaxDist = 1;
     }
 }

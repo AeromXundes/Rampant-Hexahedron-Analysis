@@ -97,6 +97,9 @@
     <EmbeddedResource Include="3D_Graphing.resx">
       <DependentUpon>3D_Graphing.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ClusterStatisticsConfigForm.resx">
+      <DependentUpon>ClusterStatisticsConfigForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ClusterStatisticsResultsForm.resx">
       <DependentUpon>ClusterStatisticsResultsForm.cs</DependentUpon>
     </EmbeddedResource>
