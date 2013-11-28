@@ -31,11 +31,11 @@ namespace RHA.Analyzers
 {
     public enum AnalyzerState
     {
+        WaitingToRun,
         RanToCompletion,
         Running,
         Cancelled,
         Faulted,
-        WaitingToRun,
         Cancelling,
     }
 }
