@@ -109,7 +109,8 @@ namespace RHA
         {
             if (this.InvokeRequired)
             {
-                this.Invoke(new Action<AnalyzerFinishState, IAnalyzer, string>(this.FinishedCallback), State, Analyzer, Message);
+                if(!this.IsDisposed && !this.Disposing)
+                    this.Invoke(new Action<AnalyzerFinishState, IAnalyzer, string>(this.FinishedCallback), State, Analyzer, Message);
                 return;
             }
             if (this.IsDisposed || this.Disposing)
