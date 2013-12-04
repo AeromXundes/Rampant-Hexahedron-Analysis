@@ -42,6 +42,7 @@ namespace ClusterStatistics
             HashSet<RHA.Analyzers.DataPoints.Blocks.Block_BasicInfo> set = new HashSet<RHA.Analyzers.DataPoints.Blocks.Block_BasicInfo>();
             foreach (string s in pairs)
             {
+                if (s.Length == 0) continue;
                 string[] val = s.Split(':');
                 int id = int.Parse(val[0]);
                 int data = (val.Length >= 2) ? int.Parse(val[1]) : 0;

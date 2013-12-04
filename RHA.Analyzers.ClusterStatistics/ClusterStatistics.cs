@@ -38,7 +38,10 @@ namespace ClusterStatistics
     {
         public ClusterStatistics()
         {
-            this.WorldFolderPath = @"C:\Users\Kevin\Cool Apps\Minecraft\MultiMC\instances\CS Project\minecraft\saves\Simple";
+            this.WorldFolderPath = @"C:\Users\Kevin\Cool Apps\Minecraft\MultiMC\instances\CS Project\minecraft\saves\Simple3";
+            var temp = new HashSet<Block_BasicInfo>();
+            temp.Add(new Block_BasicInfo(15, 0));
+            this._options.Ids.Add(temp);
         }
         public override RHA.Analyzers.AnalyzerInfo AnalyzerInfo
         {
@@ -314,22 +317,24 @@ Limitations of this analyzer:
         /// <summary>
         /// Merges clusters together. Returns true if clusters where actually merged.
         /// </summary>
-        /// <param name="Bottom"></param>
-        /// <param name="Top"></param>
+        /// <param name="Left"></param>
+        /// <param name="Right"></param>
         /// <param name="xDistMax"></param>
         /// <param name="yDistMax"></param>
         /// <param name="zDistMax"></param>
         /// <returns></returns>
-        protected bool MergeClustersBottomToTop(KeyValuePair<Tuple<int, int>, List<ClusterDataPoint>> Bottom, KeyValuePair<Tuple<int, int>, List<ClusterDataPoint>> Top, int xDistMax, int yDistMax, int zDistMax)
+        protected bool MergeClustersLeftToRight(KeyValuePair<Tuple<int, int>, List<ClusterDataPoint>> Left, KeyValuePair<Tuple<int, int>, List<ClusterDataPoint>> Right, int xDistMax, int yDistMax, int zDistMax)
         {
-            if (Bottom.Key.Item2 != Top.Key.Item2 + 1)
+            if (Left.Key.Item2 + 1 != Right.Key.Item2)
                 return false;
 
             bool changed = false;
 
-            foreach (ClusterDataPoint a in Bottom.Value.Where(x => x.ZMaxCoord % 16 >= 15 - zDistMax))   // where the maxZCoord is the last block in the chunk
+            foreach (ClusterDataPoint a in Left.Value.Where(x => x.ZMaxCoordChunk >= 16 - zDistMax))   // where the maxZCoord is the last block in the chunk
+            //foreach (ClusterDataPoint a in Bottom.Value.Where(x => x.ZMaxCoord % 16 >= 15 - zDistMax))   // where the maxZCoord is the last block in the chunk
             {
-                foreach (ClusterDataPoint b in Top.Value.Where(x => x.ZMinCoord % 16 <= zDistMax)) // where the minZCoord is the first block of the chunk
+                foreach (ClusterDataPoint b in Right.Value.Where(x => x.ZMinCoordChunk <= zDistMax)) // where the minZCoord is the first block of the chunk
+                //foreach (ClusterDataPoint b in Top.Value.Where(x => x.ZMinCoord % 16 <= zDistMax)) // where the minZCoord is the first block of the chunk
                 {
                     if (AreClustersAdjacent(a, b, xDistMax, yDistMax, zDistMax))
                     {
@@ -345,19 +350,21 @@ Limitations of this analyzer:
         /// <summary>
         /// Merges clusters together. Returns true if clusters where actually merged.
         /// </summary>
-        /// <param name="Left"></param>
-        /// <param name="Right"></param>
+        /// <param name="Bottom"></param>
+        /// <param name="Top"></param>
         /// <returns></returns>
-        protected bool MergeClustersLeftToRight(KeyValuePair<Tuple<int,int>, List<ClusterDataPoint>> Left, KeyValuePair<Tuple<int,int>, List<ClusterDataPoint>> Right, int xDistMax, int yDistMax, int zDistMax)
+        protected bool MergeClustersBottomToTop(KeyValuePair<Tuple<int,int>, List<ClusterDataPoint>> Bottom, KeyValuePair<Tuple<int,int>, List<ClusterDataPoint>> Top, int xDistMax, int yDistMax, int zDistMax)
         {
-            if (Left.Key.Item1 != Right.Key.Item1 + 1)
+            if (Bottom.Key.Item1 + 1 != Top.Key.Item1)
                 return false;
 
             bool changed = false;
 
-            foreach (ClusterDataPoint a in Left.Value.Where(x => x.XMaxCoord % 16 >= 15 - xDistMax))   // where the maxXCoord is the last block in the chunk
+            foreach (ClusterDataPoint a in Bottom.Value.Where(x => x.XMaxCoordChunk + 1 >= 16 - xDistMax))   // where the maxXCoord is the last block in the chunk
+            //foreach (ClusterDataPoint a in Left.Value.Where(x => x.XMaxCoordChunk >= 16 - xDistMax x.XMaxCoord % 16 >= 15 - xDistMax))   // where the maxXCoord is the last block in the chunk
             {
-                foreach (ClusterDataPoint b in Right.Value.Where(x => x.XMinCoord % 16 <= xDistMax)) // where the minXCoord is the first block of the chunk
+                foreach (ClusterDataPoint b in Top.Value.Where(x => x.XMinCoordChunk + 1 <= xDistMax)) // where the minXCoord is the first block of the chunk
+                //foreach (ClusterDataPoint b in Right.Value.Where(x => x.XMinCoord % 16 <= xDistMax)) // where the minXCoord is the first block of the chunk
                 {
                     if (AreClustersAdjacent(a, b, xDistMax, yDistMax, zDistMax))
                     {
@@ -393,14 +400,17 @@ Limitations of this analyzer:
             // Theoretically could have a thread for each row and column since merging each row and column is independant from everything else (just lock the necessary chunks).
             // Could alternate threads (even and odd or something like that)
 
-            // merge clusters in the X+ direction
-            for(int x = minX; x < maxX; x++)
+            // For each chunk row in the X-line (-x -> +x), iterate across the Z-line (-z -> +z).
+            // Looking down upon the XZ-plane, with +X to the top and +Z to the right, we start at (-x, -z) and move towards +z until we reach maxZ.
+            // Upon reaching maxZ, we reset to -z and move up one x-value (-x+1, -z), and repeat moving across the z-line.
+            // We keep repeating until we reach (+x,+z).
+            for(int x = minX; x <= maxX; x++)
             {
                 List<ClusterDataPoint> prevClusters = null;
                 Tuple<int, int> prevCoord = null;
-                for(int z = minZ; z < maxZ; z++)
+                for(int z = minZ; z <= maxZ; z++)
                 {
-                    List<ClusterDataPoint> currClusters;
+                    List<ClusterDataPoint> currClusters = null;
                     Tuple<int, int> currCoord = new Tuple<int, int>(x, z);
                     if (orderedChunkClusters.TryGetValue(currCoord, out currClusters))
                     {
@@ -430,14 +440,13 @@ Limitations of this analyzer:
             // I suppose in other words:
             //HACK: this whole loop
 
-            // merge clusters in the +Z direction
-            for (int z = minZ; z < maxZ; z++)
+            for (int z = minZ; z <= maxZ; z++)
             {
                 List<ClusterDataPoint> prevClusters = null;
                 Tuple<int, int> prevCoord = null;
-                for (int x = minX; x < maxX; x++)
+                for (int x = minX; x <= maxX; x++)
                 {
-                    List<ClusterDataPoint> currClusters;
+                    List<ClusterDataPoint> currClusters = null;
                     Tuple<int, int> currCoord = new Tuple<int, int>(x, z);
                     if (orderedChunkClusters.TryGetValue(currCoord, out currClusters))
                     {
@@ -453,7 +462,8 @@ Limitations of this analyzer:
                             // if a merge happened, there are two cluster objects with exactly the same blocks, so get rid of one of those. doesn't matter which one.
                             // assumes what is in the dictionary is what we return, not what is in the Data array.
                             if (merged)
-                                orderedChunkClusters[prevCoord] = currClusters;
+                                orderedChunkClusters.Remove(prevCoord);
+                                //orderedChunkClusters[prevCoord] = currClusters;
                         }
 
                         prevClusters = currClusters;
@@ -540,9 +550,9 @@ Limitations of this analyzer:
             int ZLengthSum = 0;
             foreach (ClusterDataPoint cdp in results.Clusters)
             {
-                XLengthSum += cdp.XLength;
-                YLengthSum += cdp.YLength;
-                ZLengthSum += cdp.ZLength;
+                XLengthSum += cdp.XLength.Value;
+                YLengthSum += cdp.YLength.Value;
+                ZLengthSum += cdp.ZLength.Value;
             }
             results.ClusterXLengthAvg = XLengthSum / results.Clusters.Count;
             results.ClusterYLengthAvg = YLengthSum / results.Clusters.Count;
