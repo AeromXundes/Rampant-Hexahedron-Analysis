@@ -94,15 +94,28 @@ namespace RHA.Analyzers.DataPoints.Blocks
 
         #endregion
 
+        /// <summary>
+        /// Because C# implements the % operator as remainder and not modulo division...
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="m"></param>
+        /// <returns>Returns a true modulo division.</returns>
+        protected int mod(int x, int m)
+        {
+            int r = x % m;
+            return r < 0 ? r + m : r;
+        }
+
         #region Chunk Coordinates
         /// <summary>
         /// This block's coordinate within a chunk.
         /// </summary>
-        public int? XChunk { get { return (XWorld.HasValue) ? (int?)Math.Abs(XWorld.Value % 16) + ((XWorld < 0) ? 15 : 0) : null; } }
+        public int? XChunk { get { return (XWorld.HasValue) ? (int?)mod(XWorld.Value, 16) : null; } }
+        //public int? XChunk { get { return (XWorld.HasValue) ? (int?)Math.Abs(XWorld.Value % 16) + ((XWorld < 0) ? 15 : 0) : null; } }
         /// <summary>
         /// This block's coordinate within a chunk.
         /// </summary>
-        public int? ZChunk { get { return (ZWorld.HasValue) ? (int?)Math.Abs(ZWorld.Value % 16) + ((ZWorld < 0) ? 15 : 0) : null; } }
+        public int? ZChunk { get { return (ZWorld.HasValue) ? (int?)mod(ZWorld.Value, 16) : null; } }
         /// <summary>
         /// The chunk coordinate this block is in.
         /// </summary>
