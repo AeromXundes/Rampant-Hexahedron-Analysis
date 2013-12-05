@@ -134,15 +134,15 @@ namespace ClusterStatistics
         /// <summary>
         /// The distance between XMaxCoord and XMinCoord
         /// </summary>
-        public int XLength { get { return XMaxCoord - XMinCoord; } }
+        public int? XLength { get { return XMaxCoord - XMinCoord; } }
         /// <summary>
         /// The distance between YMaxCoord and YMinCoord
         /// </summary>
-        public int YLength { get { return YMaxCoord - YMinCoord; } }
+        public int? YLength { get { return YMaxCoord - YMinCoord; } }
         /// <summary>
         /// The distance between ZMaxCoord and ZMinCoord
         /// </summary>
-        public int ZLength { get { return ZMaxCoord - ZMinCoord; } }
+        public int? ZLength { get { return ZMaxCoord - ZMinCoord; } }
 
         /// <summary>
         /// Recalculates the min-max coords. O(n) operation.
@@ -150,12 +150,12 @@ namespace ClusterStatistics
         /// </summary>
         private void InitMinMaxCoords()
         {
-            XMaxCoord = 0;
-            XMinCoord = 0;
-            YMaxCoord = 0;
-            YMinCoord = 0;
-            ZMaxCoord = 0;
-            ZMinCoord = 0;
+            XMaxCoord = null;
+            XMinCoord = null;
+            YMaxCoord = null;
+            YMinCoord = null;
+            ZMaxCoord = null;
+            ZMinCoord = null;
             foreach (Block_BasicInfo_Location b in Blocks)
             {
                 UpdateMinMaxCoords(b);
@@ -167,44 +167,60 @@ namespace ClusterStatistics
         /// <param name="block"></param>
         private void UpdateMinMaxCoords(Block_BasicInfo_Location block)
         {
-            if (XMaxCoord < block.XWorld.Value)
-                XMaxCoord = block.XWorld.Value;
-            if (XMinCoord > block.XWorld.Value)
-                XMinCoord = block.XWorld.Value;
+            if (XMaxCoord == null || XMaxCoord < block.XWorld)
+                XMaxCoord = block.XWorld;
+            if (XMinCoord == null || XMinCoord > block.XWorld)
+                XMinCoord = block.XWorld;
 
-            if (YMaxCoord < block.YWorld.Value)
-                YMaxCoord = block.YWorld.Value;
-            if (YMinCoord > block.YWorld.Value)
-                YMinCoord = block.YWorld.Value;
+            if (YMaxCoord == null || YMaxCoord < block.YWorld)
+                YMaxCoord = block.YWorld;
+            if (YMinCoord == null || YMinCoord > block.YWorld)
+                YMinCoord = block.YWorld;
 
-            if (ZMaxCoord < block.ZWorld.Value)
-                ZMaxCoord = block.ZWorld.Value;
-            if (ZMinCoord > block.ZWorld.Value)
-                ZMinCoord = block.ZWorld.Value;
+            if (ZMaxCoord == null || ZMaxCoord < block.ZWorld)
+                ZMaxCoord = block.ZWorld;
+            if (ZMinCoord == null || ZMinCoord > block.ZWorld)
+                ZMinCoord = block.ZWorld;
         }
         /// <summary>
         /// The largest x-coord of all the blocks. O(1) operation.
         /// </summary>
-        public int XMaxCoord { get; private set; }
+        public int? XMaxCoord { get; private set; }
         /// <summary>
         /// The smallest x-coord of all the blocks. O(1) operation.
         /// </summary>
-        public int XMinCoord { get; private set; }
+        public int? XMinCoord { get; private set; }
         /// <summary>
         /// The largest y-coord of all the blocks. O(1) operation.
         /// </summary>
-        public int YMaxCoord { get; private set; }
+        public int? YMaxCoord { get; private set; }
         /// <summary>
         /// The smallest y-coord of all the blocks. O(1) operation.
         /// </summary>
-        public int YMinCoord { get; private set; }
+        public int? YMinCoord { get; private set; }
         /// <summary>
         /// The largest z-coord of all the blocks. O(1) operation.
         /// </summary>
-        public int ZMaxCoord { get; private set; }
+        public int? ZMaxCoord { get; private set; }
         /// <summary>
         /// The smallest z-coord of all the blocks. O(1) operation.
         /// </summary>
-        public int ZMinCoord { get; private set; }
+        public int? ZMinCoord { get; private set; }
+
+        public int? XMaxCoordChunk { get { return (XMaxCoord.HasValue) ? (int?)mod(XMaxCoord.Value, 16) : null; } }
+        public int? XMinCoordChunk { get { return (XMinCoord.HasValue) ? (int?)mod(XMinCoord.Value, 16) : null; } }
+        public int? ZMaxCoordChunk { get { return (ZMaxCoord.HasValue) ? (int?)mod(ZMaxCoord.Value, 16) : null; } }
+        public int? ZMinCoordChunk { get { return (ZMaxCoord.HasValue) ? (int?)mod(ZMinCoord.Value, 16) : null; } }
+        /// <summary>
+        /// Because C# implements the % operator as remainder and not modulo division...
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="m"></param>
+        /// <returns>Returns a true modulo division.</returns>
+        protected int mod(int x, int m)
+        {
+            int r = x % m;
+            return r < 0 ? r + m : r;
+        }
     }
 }
