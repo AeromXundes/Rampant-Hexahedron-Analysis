@@ -310,9 +310,9 @@
             this.label_NumBlocks.AutoSize = true;
             this.label_NumBlocks.Location = new System.Drawing.Point(97, 28);
             this.label_NumBlocks.Name = "label_NumBlocks";
-            this.label_NumBlocks.Size = new System.Drawing.Size(89, 13);
+            this.label_NumBlocks.Size = new System.Drawing.Size(80, 13);
             this.label_NumBlocks.TabIndex = 3;
-            this.label_NumBlocks.Text = "label_NumBlocks";
+            this.label_NumBlocks.Text = "Select a cluster";
             // 
             // label5
             // 
@@ -328,9 +328,9 @@
             this.label_CentroidLoc.AutoSize = true;
             this.label_CentroidLoc.Location = new System.Drawing.Point(97, 10);
             this.label_CentroidLoc.Name = "label_CentroidLoc";
-            this.label_CentroidLoc.Size = new System.Drawing.Size(92, 13);
+            this.label_CentroidLoc.Size = new System.Drawing.Size(80, 13);
             this.label_CentroidLoc.TabIndex = 1;
-            this.label_CentroidLoc.Text = "label_CentroidLoc";
+            this.label_CentroidLoc.Text = "Select a cluster";
             // 
             // label3
             // 
