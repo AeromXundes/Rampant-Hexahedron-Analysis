@@ -489,6 +489,7 @@ Limitations of this analyzer:
 
             foreach (var x in removeList)
             {
+                if (x == null) continue;
                 foreach (var y in x)
                 {
                     var key = y.Key;
@@ -585,6 +586,7 @@ Limitations of this analyzer:
             results.ClusterYLengthAvg = (double)YLengthSum / results.Clusters.Count;
             results.ClusterZLengthAvg = (double)ZLengthSum / results.Clusters.Count;
             #endregion
+            results.ClustersPerChunkAvg = (double)results.Clusters.Count / results.ChunkMap.Keys.Count;
             results.Ids = this.Ids;
             return results;
         }
