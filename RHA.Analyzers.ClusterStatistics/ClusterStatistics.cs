@@ -525,7 +525,7 @@ Limitations of this analyzer:
                 totalBlocksInClusters += cdp.Blocks.Count;
             }
 
-            results.BlocksPerClusterAvg = totalBlocksInClusters / results.Clusters.Count;
+            results.BlocksPerClusterAvg = (double)totalBlocksInClusters / results.Clusters.Count;
             #endregion
             #region ChunkMap
             Dictionary<Tuple<int,int>, bool> chunkMap = new Dictionary<Tuple<int,int>,bool>(clusterData.Keys.Count);
@@ -581,9 +581,9 @@ Limitations of this analyzer:
                 YLengthSum += cdp.YLength.Value;
                 ZLengthSum += cdp.ZLength.Value;
             }
-            results.ClusterXLengthAvg = XLengthSum / results.Clusters.Count;
-            results.ClusterYLengthAvg = YLengthSum / results.Clusters.Count;
-            results.ClusterZLengthAvg = ZLengthSum / results.Clusters.Count;
+            results.ClusterXLengthAvg = (double)XLengthSum / results.Clusters.Count;
+            results.ClusterYLengthAvg = (double)YLengthSum / results.Clusters.Count;
+            results.ClusterZLengthAvg = (double)ZLengthSum / results.Clusters.Count;
             #endregion
             results.Ids = this.Ids;
             return results;
