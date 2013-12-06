@@ -559,17 +559,17 @@ Limitations of this analyzer:
             }
             results.CentroidHeatMapChunkXZPlane = heatMap;
             #endregion
-            #region CentroidHeatMapChunkYZPlane
+            #region CentroidHeatMapChunkZYPlane
             heatMap = new Dictionary<Tuple<int, int>, int>();
             foreach (ClusterDataPoint cdp in results.Clusters)
             {
-                Tuple<int, int> key = new Tuple<int, int>(cdp.CentroidBlock.YWorld.Value, cdp.CentroidBlock.ZChunk.Value);
+                Tuple<int, int> key = new Tuple<int, int>(cdp.CentroidBlock.ZChunk.Value, cdp.CentroidBlock.YWorld.Value);
                 if (heatMap.ContainsKey(key))
                     heatMap[key] += 1;
                 else
                     heatMap.Add(key, 1);
             }
-            results.CentroidHeatMapChunkYZPlane = heatMap;
+            results.CentroidHeatMapChunkZYPlane = heatMap;
             #endregion
             #region ClusterLengthAvg
             int XLengthSum = 0;

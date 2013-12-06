@@ -59,13 +59,23 @@
             this.ilPanel_clusterVisual = new ILNumerics.Drawing.ILPanel();
             this.listBox_clusters = new System.Windows.Forms.ListBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.ilPanel_ClusterHeatMap = new ILNumerics.Drawing.ILPanel();
+            this.tabControl2 = new System.Windows.Forms.TabControl();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.ilPanel_Heatmap_XZ = new ILNumerics.Drawing.ILPanel();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.ilPanel_Heatmap_ZY = new ILNumerics.Drawing.ILPanel();
+            this.tabPage6 = new System.Windows.Forms.TabPage();
+            this.ilPanel_Heatmap_XY = new ILNumerics.Drawing.ILPanel();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.panel1.SuspendLayout();
             this.tabPage3.SuspendLayout();
+            this.tabControl2.SuspendLayout();
+            this.tabPage4.SuspendLayout();
+            this.tabPage5.SuspendLayout();
+            this.tabPage6.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -123,27 +133,27 @@
             this.label_AvgLenZ.AutoSize = true;
             this.label_AvgLenZ.Location = new System.Drawing.Point(29, 42);
             this.label_AvgLenZ.Name = "label_AvgLenZ";
-            this.label_AvgLenZ.Size = new System.Drawing.Size(41, 13);
+            this.label_AvgLenZ.Size = new System.Drawing.Size(79, 13);
             this.label_AvgLenZ.TabIndex = 5;
-            this.label_AvgLenZ.Text = "label17";
+            this.label_AvgLenZ.Text = "label_AvgLenZ";
             // 
             // label_AvgLenY
             // 
             this.label_AvgLenY.AutoSize = true;
             this.label_AvgLenY.Location = new System.Drawing.Point(29, 29);
             this.label_AvgLenY.Name = "label_AvgLenY";
-            this.label_AvgLenY.Size = new System.Drawing.Size(41, 13);
+            this.label_AvgLenY.Size = new System.Drawing.Size(79, 13);
             this.label_AvgLenY.TabIndex = 4;
-            this.label_AvgLenY.Text = "label16";
+            this.label_AvgLenY.Text = "label_AvgLenY";
             // 
             // label_AvgLenX
             // 
             this.label_AvgLenX.AutoSize = true;
             this.label_AvgLenX.Location = new System.Drawing.Point(29, 16);
             this.label_AvgLenX.Name = "label_AvgLenX";
-            this.label_AvgLenX.Size = new System.Drawing.Size(41, 13);
+            this.label_AvgLenX.Size = new System.Drawing.Size(79, 13);
             this.label_AvgLenX.TabIndex = 3;
-            this.label_AvgLenX.Text = "label15";
+            this.label_AvgLenX.Text = "label_AvgLenX";
             // 
             // label14
             // 
@@ -367,28 +377,101 @@
             // 
             // tabPage3
             // 
-            this.tabPage3.Controls.Add(this.ilPanel_ClusterHeatMap);
+            this.tabPage3.Controls.Add(this.tabControl2);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage3.Size = new System.Drawing.Size(505, 382);
             this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "Heat Map";
+            this.tabPage3.Text = "Centroid Heat Map";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
-            // ilPanel_ClusterHeatMap
+            // tabControl2
             // 
-            this.ilPanel_ClusterHeatMap.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ilPanel_ClusterHeatMap.Driver = ILNumerics.Drawing.RendererTypes.OpenGL;
-            this.ilPanel_ClusterHeatMap.Editor = null;
-            this.ilPanel_ClusterHeatMap.Location = new System.Drawing.Point(3, 3);
-            this.ilPanel_ClusterHeatMap.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.ilPanel_ClusterHeatMap.Name = "ilPanel_ClusterHeatMap";
-            this.ilPanel_ClusterHeatMap.Rectangle = ((System.Drawing.RectangleF)(resources.GetObject("ilPanel_ClusterHeatMap.Rectangle")));
-            this.ilPanel_ClusterHeatMap.ShowUIControls = false;
-            this.ilPanel_ClusterHeatMap.Size = new System.Drawing.Size(499, 376);
-            this.ilPanel_ClusterHeatMap.TabIndex = 0;
-            this.ilPanel_ClusterHeatMap.Load += new System.EventHandler(this.ilPanel_ClusterHeatMap_Load);
+            this.tabControl2.Controls.Add(this.tabPage4);
+            this.tabControl2.Controls.Add(this.tabPage5);
+            this.tabControl2.Controls.Add(this.tabPage6);
+            this.tabControl2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl2.Location = new System.Drawing.Point(3, 3);
+            this.tabControl2.Name = "tabControl2";
+            this.tabControl2.SelectedIndex = 0;
+            this.tabControl2.Size = new System.Drawing.Size(499, 376);
+            this.tabControl2.TabIndex = 0;
+            // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.ilPanel_Heatmap_XZ);
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(491, 350);
+            this.tabPage4.TabIndex = 0;
+            this.tabPage4.Text = "X-Z Plane";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // ilPanel_Heatmap_XZ
+            // 
+            this.ilPanel_Heatmap_XZ.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ilPanel_Heatmap_XZ.Driver = ILNumerics.Drawing.RendererTypes.OpenGL;
+            this.ilPanel_Heatmap_XZ.Editor = null;
+            this.ilPanel_Heatmap_XZ.Location = new System.Drawing.Point(3, 3);
+            this.ilPanel_Heatmap_XZ.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ilPanel_Heatmap_XZ.Name = "ilPanel_Heatmap_XZ";
+            this.ilPanel_Heatmap_XZ.Rectangle = ((System.Drawing.RectangleF)(resources.GetObject("ilPanel_Heatmap_XZ.Rectangle")));
+            this.ilPanel_Heatmap_XZ.ShowUIControls = false;
+            this.ilPanel_Heatmap_XZ.Size = new System.Drawing.Size(485, 344);
+            this.ilPanel_Heatmap_XZ.TabIndex = 0;
+            this.ilPanel_Heatmap_XZ.Load += new System.EventHandler(this.ilPanel_Heatmap_XZ_Load);
+            // 
+            // tabPage5
+            // 
+            this.tabPage5.Controls.Add(this.ilPanel_Heatmap_ZY);
+            this.tabPage5.Location = new System.Drawing.Point(4, 22);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage5.Size = new System.Drawing.Size(491, 350);
+            this.tabPage5.TabIndex = 1;
+            this.tabPage5.Text = "Z-Y Plane";
+            this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // ilPanel_Heatmap_ZY
+            // 
+            this.ilPanel_Heatmap_ZY.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ilPanel_Heatmap_ZY.Driver = ILNumerics.Drawing.RendererTypes.OpenGL;
+            this.ilPanel_Heatmap_ZY.Editor = null;
+            this.ilPanel_Heatmap_ZY.Location = new System.Drawing.Point(3, 3);
+            this.ilPanel_Heatmap_ZY.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ilPanel_Heatmap_ZY.Name = "ilPanel_Heatmap_ZY";
+            this.ilPanel_Heatmap_ZY.Rectangle = ((System.Drawing.RectangleF)(resources.GetObject("ilPanel_Heatmap_ZY.Rectangle")));
+            this.ilPanel_Heatmap_ZY.ShowUIControls = false;
+            this.ilPanel_Heatmap_ZY.Size = new System.Drawing.Size(485, 344);
+            this.ilPanel_Heatmap_ZY.TabIndex = 0;
+            this.ilPanel_Heatmap_ZY.Load += new System.EventHandler(this.ilPanel_Heatmap_ZY_Load);
+            // 
+            // tabPage6
+            // 
+            this.tabPage6.Controls.Add(this.ilPanel_Heatmap_XY);
+            this.tabPage6.Location = new System.Drawing.Point(4, 22);
+            this.tabPage6.Name = "tabPage6";
+            this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage6.Size = new System.Drawing.Size(491, 350);
+            this.tabPage6.TabIndex = 2;
+            this.tabPage6.Text = "X-Y Plane";
+            this.tabPage6.UseVisualStyleBackColor = true;
+            // 
+            // ilPanel_Heatmap_XY
+            // 
+            this.ilPanel_Heatmap_XY.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ilPanel_Heatmap_XY.Driver = ILNumerics.Drawing.RendererTypes.OpenGL;
+            this.ilPanel_Heatmap_XY.Editor = null;
+            this.ilPanel_Heatmap_XY.Location = new System.Drawing.Point(3, 3);
+            this.ilPanel_Heatmap_XY.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ilPanel_Heatmap_XY.Name = "ilPanel_Heatmap_XY";
+            this.ilPanel_Heatmap_XY.Rectangle = ((System.Drawing.RectangleF)(resources.GetObject("ilPanel_Heatmap_XY.Rectangle")));
+            this.ilPanel_Heatmap_XY.ShowUIControls = false;
+            this.ilPanel_Heatmap_XY.Size = new System.Drawing.Size(485, 344);
+            this.ilPanel_Heatmap_XY.TabIndex = 0;
+            this.ilPanel_Heatmap_XY.Load += new System.EventHandler(this.ilPanel_Heatmap_XY_Load);
             // 
             // ClusterStatisticsResultsForm
             // 
@@ -396,6 +479,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(513, 408);
             this.Controls.Add(this.tabControl1);
+            this.DoubleBuffered = true;
             this.Name = "ClusterStatisticsResultsForm";
             this.Text = "ClusterStatisticsResultsForm";
             this.tabControl1.ResumeLayout(false);
@@ -407,6 +491,10 @@
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.tabPage3.ResumeLayout(false);
+            this.tabControl2.ResumeLayout(false);
+            this.tabPage4.ResumeLayout(false);
+            this.tabPage5.ResumeLayout(false);
+            this.tabPage6.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -443,6 +531,12 @@
         private System.Windows.Forms.Label label_CentroidLoc;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TabPage tabPage3;
-        private ILNumerics.Drawing.ILPanel ilPanel_ClusterHeatMap;
+        private System.Windows.Forms.TabControl tabControl2;
+        private System.Windows.Forms.TabPage tabPage4;
+        private ILNumerics.Drawing.ILPanel ilPanel_Heatmap_XZ;
+        private System.Windows.Forms.TabPage tabPage5;
+        private ILNumerics.Drawing.ILPanel ilPanel_Heatmap_ZY;
+        private System.Windows.Forms.TabPage tabPage6;
+        private ILNumerics.Drawing.ILPanel ilPanel_Heatmap_XY;
     }
 }

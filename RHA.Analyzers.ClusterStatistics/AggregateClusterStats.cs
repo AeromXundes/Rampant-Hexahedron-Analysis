@@ -19,7 +19,7 @@ namespace ClusterStatistics
         public double BlocksPerChunkAvg;
         public Dictionary<Tuple<int, int>, int> CentroidHeatMapChunkXZPlane;
         public Dictionary<Tuple<int, int>, int> CentroidHeatMapChunkXYPlane;
-        public Dictionary<Tuple<int, int>, int> CentroidHeatMapChunkYZPlane;
+        public Dictionary<Tuple<int, int>, int> CentroidHeatMapChunkZYPlane;
         public double ClusterYLengthAvg;
         public double ClusterXLengthAvg;
         public double ClusterZLengthAvg;

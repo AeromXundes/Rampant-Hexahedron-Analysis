@@ -1,4 +1,6 @@
-﻿using ILNumerics.Drawing;
+﻿using ILNumerics;
+using ILNumerics.Drawing;
+using ILNumerics.Drawing.Plotting;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -78,6 +80,53 @@ namespace ClusterStatistics
             this.ilPanel_clusterVisual.Refresh();
         }
 
+        // Renders the X-Z Plane centroid heatmap
+        private void ilPanel_Heatmap_XZ_Load(object sender, EventArgs e)
+        {
+            var scene = new ILScene();
+            ILPlotCube plotCube = HeatMap(Stats.CentroidHeatMapChunkXZPlane, 16, 16);
+            plotCube.Axes.XAxis.Label.Text = "X-Axis";
+            plotCube.Axes.YAxis.Label.Text = "Z-Axis";
+            scene.Add(plotCube);
+            ilPanel_Heatmap_XZ.Scene = scene;
+        }
+
+        private void ilPanel_Heatmap_ZY_Load(object sender, EventArgs e)
+        {
+            var scene = new ILScene();
+            ILPlotCube plotCube = HeatMap(Stats.CentroidHeatMapChunkZYPlane, 16, 256);
+            plotCube.Axes.XAxis.Label.Text = "Z-Axis";
+            plotCube.Axes.YAxis.Label.Text = "Y-Axis";
+            scene.Add(plotCube);
+            ilPanel_Heatmap_ZY.Scene = scene;
+        }
+
+        private void ilPanel_Heatmap_XY_Load(object sender, EventArgs e)
+        {
+            var scene = new ILScene();
+            ILPlotCube plotCube = HeatMap(Stats.CentroidHeatMapChunkXYPlane, 16, 256);
+            scene.Add(plotCube);
+            ilPanel_Heatmap_XY.Scene = scene;
+        }
+        
+        private ILPlotCube HeatMap(Dictionary<Tuple<int, int>, int> HeatMapStats, int xDim, int yDim)
+        {
+            float[,] heatVals = new float[xDim, yDim];
+            foreach (var key in HeatMapStats.Keys)
+            {
+                int x = key.Item1;
+                int y = key.Item2;
+                int z = HeatMapStats[key];
+                heatVals[x, y] = z;
+            }
+            ILArray<float> heatMap = heatVals;
+            ILPlotCube plotCube = new ILPlotCube(twoDMode: true) { new ILSurface(heatMap) };
+            plotCube.AllowPan = false;
+            plotCube.AllowRotation = false;
+            plotCube.AllowZoom = false;
+            return plotCube;
+        }
+        /*
         private void RenderClusterHeatMap(List<ClusterDataPoint> clusters)
         {
             var scene = new ILScene();
@@ -106,11 +155,9 @@ namespace ClusterStatistics
             this.ilPanel_ClusterHeatMap.Scene.Configure();
             this.ilPanel_ClusterHeatMap.Refresh();
         }
+         */
 
-        private void ilPanel_ClusterHeatMap_Load(object sender, EventArgs e)
-        {
-            RenderClusterHeatMap(Stats.Clusters);
-        }
+        
     }
 
     class ClusterItem
