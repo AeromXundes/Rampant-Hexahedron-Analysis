@@ -38,7 +38,7 @@ namespace ClusterStatistics
     {
         public ClusterStatistics()
         {
-            this.WorldFolderPath = @"C:\Users\Kevin\Cool Apps\Minecraft\MultiMC\instances\CS Project\minecraft\saves\Simple3";
+            this.WorldFolderPath = @"C:\Users\Kevin\Cool Apps\Minecraft\MultiMC\instances\CS Project\minecraft\saves\Simple5";
             var temp = new HashSet<Block_BasicInfo>();
             temp.Add(new Block_BasicInfo(15, 0));
             this._options.Ids.Add(temp);
@@ -285,29 +285,28 @@ Limitations of this analyzer:
         }
 
         /// <summary>
-        /// Determines if two clusters have blocks adjacent to each other based on the DistMax vars.
+        /// Determines if two clusters have blocks adjacent to each other based on the DistMax vars. Compares world coordinates.
         /// </summary>
         /// <param name="A">A cluster.</param>
         /// <param name="B">B cluster.</param>
         /// <param name="xDistMax">The abs distance between blocks in the x plane.</param>
         /// <param name="yDistMax">The abs distance between blocks in the y plane.</param>
         /// <param name="zDistMax">The abs distance between blocks in the z plane.</param>
-        /// <returns>Returns true if there exists a block in A within the DistMax of another block in B.</returns>
-        /// <exception cref="ArgumentExcpetion">Thrown when A == B.</exception>
+        /// <returns>Returns true if there exists a block in A within the DistMax of another block in B. If A == B, returns false.</returns>
         protected bool AreClustersAdjacent(ClusterDataPoint A, ClusterDataPoint B, int xDistMax, int yDistMax, int zDistMax)
         {
             if (A == B)
-                throw new ArgumentException("Comparing a cluster to itself doesn't make any sense.");
+                return false;
 
-            foreach (Block_BasicInfo_Location b in A.Blocks)
+            foreach (Block_BasicInfo_Location a in A.Blocks)
             {
-                foreach (Block_BasicInfo_Location c in B.Blocks)
+                foreach (Block_BasicInfo_Location b in B.Blocks)
                 {
-                    if (Math.Abs(b.XWorld.Value - c.XWorld.Value) <= xDistMax)
+                    if (Math.Abs(a.XWorld.Value - b.XWorld.Value) <= xDistMax)
                         return true;
-                    if (Math.Abs(b.YWorld.Value - c.YWorld.Value) <= yDistMax)
+                    if (Math.Abs(a.YWorld.Value - b.YWorld.Value) <= yDistMax)
                         return true;
-                    if (Math.Abs(b.ZWorld.Value - c.ZWorld.Value) <= zDistMax)
+                    if (Math.Abs(a.ZWorld.Value - b.ZWorld.Value) <= zDistMax)
                         return true;
                 }
             }
@@ -315,66 +314,72 @@ Limitations of this analyzer:
         }
 
         /// <summary>
-        /// Merges clusters together. Returns true if clusters where actually merged.
+        /// Merges clusters together. Merged clusters are retained in Right and removed from Left.
         /// </summary>
-        /// <param name="Left"></param>
-        /// <param name="Right"></param>
+        /// <param name="Left">A KeyValuePair with the chunk coordinates in the Key and a list of ClusterDataPoints in the Value.</param>
+        /// <param name="Right">A KeyValuePair with the chunk coordinates in the Key and a list of ClusterDataPoints in the Value.</param>
         /// <param name="xDistMax"></param>
         /// <param name="yDistMax"></param>
         /// <param name="zDistMax"></param>
-        /// <returns></returns>
-        protected bool MergeClustersLeftToRight(KeyValuePair<Tuple<int, int>, List<ClusterDataPoint>> Left, KeyValuePair<Tuple<int, int>, List<ClusterDataPoint>> Right, int xDistMax, int yDistMax, int zDistMax)
+        /// <returns>Returns the number of chunks merged. Returns -1 if chunks aren't aligned correctly.</returns>
+        protected List<KeyValuePair<Tuple<int, int>, List<ClusterDataPoint>>> MergeClustersLeftToRight(KeyValuePair<Tuple<int, int>, List<ClusterDataPoint>> Left, KeyValuePair<Tuple<int, int>, List<ClusterDataPoint>> Right, int xDistMax, int yDistMax, int zDistMax)
         {
             if (Left.Key.Item2 + 1 != Right.Key.Item2)
-                return false;
+                return null;
 
-            bool changed = false;
+            List<ClusterDataPoint> removeList = new List<ClusterDataPoint>();
 
             foreach (ClusterDataPoint a in Left.Value.Where(x => x.ZMaxCoordChunk >= 16 - zDistMax))   // where the maxZCoord is the last block in the chunk
-            //foreach (ClusterDataPoint a in Bottom.Value.Where(x => x.ZMaxCoord % 16 >= 15 - zDistMax))   // where the maxZCoord is the last block in the chunk
             {
                 foreach (ClusterDataPoint b in Right.Value.Where(x => x.ZMinCoordChunk <= zDistMax)) // where the minZCoord is the first block of the chunk
-                //foreach (ClusterDataPoint b in Top.Value.Where(x => x.ZMinCoord % 16 <= zDistMax)) // where the minZCoord is the first block of the chunk
                 {
                     if (AreClustersAdjacent(a, b, xDistMax, yDistMax, zDistMax))
                     {
                         a.AddBlocks(b.Blocks);
                         b.AddBlocks(a.Blocks);
-                        changed = true;
+                        removeList.Add(a);
                     }
                 }
             }
-            return changed;
+
+            List<KeyValuePair<Tuple<int, int>, List<ClusterDataPoint>>> results = new List<KeyValuePair<Tuple<int, int>, List<ClusterDataPoint>>>();
+            
+            results.Add(new KeyValuePair<Tuple<int,int>,List<ClusterDataPoint>>(Left.Key, removeList));
+
+            return results;
         }
 
         /// <summary>
-        /// Merges clusters together. Returns true if clusters where actually merged.
+        /// Merges clusters together. Merged clusters are retained in Top and removed from Bottom.
         /// </summary>
-        /// <param name="Bottom"></param>
-        /// <param name="Top"></param>
-        /// <returns></returns>
-        protected bool MergeClustersBottomToTop(KeyValuePair<Tuple<int,int>, List<ClusterDataPoint>> Bottom, KeyValuePair<Tuple<int,int>, List<ClusterDataPoint>> Top, int xDistMax, int yDistMax, int zDistMax)
+        /// <param name="Bottom">A KeyValuePair with the chunk coordinates in the Key and a list of ClusterDataPoints in the Value.</param>
+        /// <param name="Top">A KeyValuePair with the chunk coordinates in the Key and a list of ClusterDataPoints in the Value.</param>
+        /// <returns>Returns the number of chunks merged. Returns -1 if chunks aren't aligned correctly.</returns>
+        protected List<KeyValuePair<Tuple<int, int>, List<ClusterDataPoint>>> MergeClustersBottomToTop(KeyValuePair<Tuple<int, int>, List<ClusterDataPoint>> Bottom, KeyValuePair<Tuple<int, int>, List<ClusterDataPoint>> Top, int xDistMax, int yDistMax, int zDistMax)
         {
             if (Bottom.Key.Item1 + 1 != Top.Key.Item1)
-                return false;
+                return null;
 
-            bool changed = false;
+            List<ClusterDataPoint> removeList = new List<ClusterDataPoint>();
 
             foreach (ClusterDataPoint a in Bottom.Value.Where(x => x.XMaxCoordChunk + 1 >= 16 - xDistMax))   // where the maxXCoord is the last block in the chunk
-            //foreach (ClusterDataPoint a in Left.Value.Where(x => x.XMaxCoordChunk >= 16 - xDistMax x.XMaxCoord % 16 >= 15 - xDistMax))   // where the maxXCoord is the last block in the chunk
             {
                 foreach (ClusterDataPoint b in Top.Value.Where(x => x.XMinCoordChunk + 1 <= xDistMax)) // where the minXCoord is the first block of the chunk
-                //foreach (ClusterDataPoint b in Right.Value.Where(x => x.XMinCoord % 16 <= xDistMax)) // where the minXCoord is the first block of the chunk
                 {
                     if (AreClustersAdjacent(a, b, xDistMax, yDistMax, zDistMax))
                     {
                         a.AddBlocks(b.Blocks);
                         b.AddBlocks(a.Blocks);
-                        changed = true;
+                        removeList.Add(a);
                     }
                 }
             }
-            return changed;
+
+            List<KeyValuePair<Tuple<int, int>, List<ClusterDataPoint>>> results = new List<KeyValuePair<Tuple<int, int>, List<ClusterDataPoint>>>();
+
+            results.Add(new KeyValuePair<Tuple<int, int>, List<ClusterDataPoint>>(Bottom.Key, removeList));
+
+            return results;
         }
 
         protected override void Summarize(List<ClusterDataPoint>[] Data, System.Threading.CancellationToken CancelToken)
@@ -396,6 +401,8 @@ Limitations of this analyzer:
             int minZ = orderedChunkClusters.Keys.Min(tuple => tuple.Item2);
             int maxZ = orderedChunkClusters.Keys.Max(tuple => tuple.Item2);
 
+            List<List<KeyValuePair<Tuple<int, int>, List<ClusterDataPoint>>>> removeList = new List<List<KeyValuePair<Tuple<int, int>, List<ClusterDataPoint>>>>();
+
             //OPTIMIZE: These two loops are just begging to be parallelized.
             // Theoretically could have a thread for each row and column since merging each row and column is independant from everything else (just lock the necessary chunks).
             // Could alternate threads (even and odd or something like that)
@@ -416,17 +423,21 @@ Limitations of this analyzer:
                     {
                         if (prevClusters != null)
                         {
-                            bool merged = MergeClustersLeftToRight(
+                            var needsToBeRemoved = MergeClustersLeftToRight(
                                 new KeyValuePair<Tuple<int, int>, List<ClusterDataPoint>>(prevCoord, prevClusters),
                                 new KeyValuePair<Tuple<int, int>, List<ClusterDataPoint>>(currCoord, currClusters),
                                 XAbsMaxDist,
                                 YAbsMaxDist,
                                 ZAbsMaxDist);
 
+                            removeList.Add(needsToBeRemoved);
+                            /*
                             // if a merge happened, there are two cluster objects with exactly the same blocks, so get rid of one of those. doesn't matter which one.
-                            // assumes what is in the dictionary is what we return, not what is in the Data array.
+                            // actually, it does a bit. it might mean that chunk the cluster is in doesn't get counted in the GUI. probabaly needs to be fixed...
                             if (merged)
-                                orderedChunkClusters[prevCoord] = currClusters;
+                                orderedChunkClusters.Remove(prevCoord);
+                                //orderedChunkClusters[prevCoord] = currClusters;
+                            */
                         }
 
                         prevClusters = currClusters;
@@ -452,22 +463,38 @@ Limitations of this analyzer:
                     {
                         if (prevClusters != null)
                         {
-                            bool merged = MergeClustersBottomToTop(
+                            var needsToBeRemoved = MergeClustersBottomToTop(
                                 new KeyValuePair<Tuple<int, int>, List<ClusterDataPoint>>(prevCoord, prevClusters),
                                 new KeyValuePair<Tuple<int, int>, List<ClusterDataPoint>>(currCoord, currClusters),
                                 XAbsMaxDist,
                                 YAbsMaxDist,
                                 ZAbsMaxDist);
 
+                            removeList.Add(needsToBeRemoved);
+
+                            /*
                             // if a merge happened, there are two cluster objects with exactly the same blocks, so get rid of one of those. doesn't matter which one.
-                            // assumes what is in the dictionary is what we return, not what is in the Data array.
+                            // actually, it does a bit. it might mean that chunk the cluster is in doesn't get counted in the GUI. probabaly needs to be fixed...
                             if (merged)
                                 orderedChunkClusters.Remove(prevCoord);
                                 //orderedChunkClusters[prevCoord] = currClusters;
+                             */
                         }
 
                         prevClusters = currClusters;
                         prevCoord = currCoord;
+                    }
+                }
+            }
+
+            foreach (var x in removeList)
+            {
+                foreach (var y in x)
+                {
+                    var key = y.Key;
+                    foreach (var z in y.Value)
+                    {
+                        orderedChunkClusters[key].Remove(z);
                     }
                 }
             }
